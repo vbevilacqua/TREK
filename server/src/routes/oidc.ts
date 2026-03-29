@@ -225,9 +225,12 @@ router.get('/callback', async (req: Request, res: Response) => {
       ).run(username, email, hash, role, sub, config.issuer);
 
       if (validInvite) {
-        db.prepare(
+        const updated = db.prepare(
           'UPDATE invite_tokens SET used_count = used_count + 1 WHERE id = ? AND (max_uses = 0 OR used_count < max_uses)'
         ).run(validInvite.id);
+        if (updated.changes === 0) {
+          console.warn(`[OIDC] Invite token ${pending.inviteToken?.slice(0, 8)}... exceeded max_uses (race condition)`);
+        }
       }
 
       user = { id: Number(result.lastInsertRowid), username, email, role } as User;
