@@ -7,6 +7,12 @@ import { useTranslation } from '../../i18n'
 import { filesApi } from '../../api/client'
 import type { Place, Reservation, TripFile, Day, AssignmentsMap } from '../../types'
 
+function authUrl(url: string): string {
+  const token = localStorage.getItem('auth_token')
+  if (!token || !url || url.includes('token=')) return url
+  return `${url}${url.includes('?') ? '&' : '?'}token=${token}`
+}
+
 function isImage(mimeType) {
   if (!mimeType) return false
   return mimeType.startsWith('image/')
@@ -48,14 +54,14 @@ function ImageLightbox({ file, onClose }: ImageLightboxProps) {
     >
       <div style={{ position: 'relative', maxWidth: '90vw', maxHeight: '90vh' }} onClick={e => e.stopPropagation()}>
         <img
-          src={file.url}
+          src={authUrl(file.url)}
           alt={file.original_name}
           style={{ maxWidth: '90vw', maxHeight: '90vh', objectFit: 'contain', borderRadius: 8, display: 'block' }}
         />
         <div style={{ position: 'absolute', top: -40, left: 0, right: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 4px' }}>
           <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '80%' }}>{file.original_name}</span>
           <div style={{ display: 'flex', gap: 8 }}>
-            <a href={file.url} target="_blank" rel="noreferrer" style={{ color: 'rgba(255,255,255,0.7)', display: 'flex' }} title={t('files.openTab')}>
+            <a href={authUrl(file.url)} target="_blank" rel="noreferrer" style={{ color: 'rgba(255,255,255,0.7)', display: 'flex' }} title={t('files.openTab')}>
               <ExternalLink size={16} />
             </a>
             <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.7)', display: 'flex', padding: 0 }}>
@@ -311,7 +317,7 @@ export default function FileManager({ files = [], onUpload, onDelete, onUpdate, 
     if (file.reservation_id) allLinkedResIds.add(file.reservation_id)
     for (const rid of (file.linked_reservation_ids || [])) allLinkedResIds.add(rid)
     const linkedReservations = [...allLinkedResIds].map(rid => reservations?.find(r => r.id === rid)).filter(Boolean)
-    const fileUrl = file.url || (file.filename?.startsWith('files/') ? `/uploads/${file.filename}` : `/uploads/files/${file.filename}`)
+    const fileUrl = authUrl(file.url)
 
     return (
       <div key={file.id} style={{
@@ -622,7 +628,7 @@ export default function FileManager({ files = [], onUpload, onDelete, onUpdate, 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 16px', borderBottom: '1px solid var(--border-primary)', flexShrink: 0 }}>
               <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{previewFile.original_name}</span>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-                <a href={previewFile.url || `/uploads/files/${previewFile.filename}`} target="_blank" rel="noreferrer"
+                <a href={authUrl(previewFile.url)} target="_blank" rel="noreferrer"
                   style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: 'var(--text-muted)', textDecoration: 'none', padding: '4px 8px', borderRadius: 6, transition: 'color 0.15s' }}
                   onMouseEnter={e => e.currentTarget.style.color = 'var(--text-primary)'}
                   onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}>
@@ -637,13 +643,13 @@ export default function FileManager({ files = [], onUpload, onDelete, onUpdate, 
               </div>
             </div>
             <object
-              data={`${previewFile.url || `/uploads/files/${previewFile.filename}`}#view=FitH`}
+              data={`${authUrl(previewFile.url)}#view=FitH`}
               type="application/pdf"
               style={{ flex: 1, width: '100%', border: 'none' }}
               title={previewFile.original_name}
             >
               <p style={{ padding: 24, textAlign: 'center', color: 'var(--text-muted)' }}>
-                <a href={previewFile.url || `/uploads/files/${previewFile.filename}`} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-primary)', textDecoration: 'underline' }}>PDF herunterladen</a>
+                <a href={authUrl(previewFile.url)} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-primary)', textDecoration: 'underline' }}>PDF herunterladen</a>
               </p>
             </object>
           </div>

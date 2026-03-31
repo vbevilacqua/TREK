@@ -184,7 +184,7 @@ export default function AtlasPage(): React.ReactElement {
       if (!a2 || a2 === '-99' || typeof a2 !== 'string' || a2.length !== 2) continue
       if (seen.has(a2)) continue
       seen.add(a2)
-      const label = String(f?.properties?.NAME || f?.properties?.ADMIN || resolveName(a2) || a2)
+      const label = String(resolveName(a2) || f?.properties?.NAME || f?.properties?.ADMIN || a2)
       opts.push({ code: a2, label })
     }
     opts.sort((a, b) => a.label.localeCompare(b.label))
@@ -644,7 +644,7 @@ export default function AtlasPage(): React.ReactElement {
                     onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent' }}
                   >
                     <span style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
-                      <span style={{ fontSize: 16 }}>{countryCodeToFlag(r.code)}</span>
+                      <img src={`https://flagcdn.com/w40/${r.code.toLowerCase()}.png`} alt={r.code} style={{ width: 28, height: 20, borderRadius: 4, objectFit: 'cover' }} />
                       <span style={{ fontSize: 13, fontWeight: 650, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {r.label}
                       </span>
