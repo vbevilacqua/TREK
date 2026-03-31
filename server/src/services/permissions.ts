@@ -95,18 +95,22 @@ export function getAllPermissions(): Record<string, PermissionLevel> {
   return result;
 }
 
-export function savePermissions(settings: Record<string, string>): void {
+export function savePermissions(settings: Record<string, string>): { skipped: string[] } {
+  const skipped: string[] = [];
   const upsert = db.prepare("INSERT OR REPLACE INTO app_settings (key, value) VALUES (?, ?)");
   const txn = db.transaction(() => {
     for (const [actionKey, level] of Object.entries(settings)) {
       const action = ACTIONS_MAP.get(actionKey);
-      if (!action) continue;
-      if (!action.allowedLevels.includes(level as PermissionLevel)) continue;
+      if (!action || !action.allowedLevels.includes(level as PermissionLevel)) {
+        skipped.push(actionKey);
+        continue;
+      }
       upsert.run(`perm_${actionKey}`, level);
     }
   });
   txn();
   invalidatePermissionsCache();
+  return { skipped };
 }
 
 /**

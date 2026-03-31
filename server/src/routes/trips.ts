@@ -294,7 +294,8 @@ router.delete('/:id', authenticate, (req: Request, res: Response) => {
   const trip = db.prepare('SELECT user_id FROM trips WHERE id = ?').get(req.params.id) as { user_id: number } | undefined;
   if (!trip) return res.status(404).json({ error: 'Trip not found' });
   const tripOwnerId = trip.user_id;
-  if (!checkPermission('trip_delete', authReq.user.role, tripOwnerId, authReq.user.id, false))
+  const isMemberDel = tripOwnerId !== authReq.user.id;
+  if (!checkPermission('trip_delete', authReq.user.role, tripOwnerId, authReq.user.id, isMemberDel))
     return res.status(403).json({ error: 'No permission to delete this trip' });
   const deletedTripId = Number(req.params.id);
   const delTrip = db.prepare('SELECT title, user_id FROM trips WHERE id = ?').get(req.params.id) as { title: string; user_id: number } | undefined;

@@ -177,7 +177,7 @@ router.put('/permissions', (req: Request, res: Response) => {
   if (!permissions || typeof permissions !== 'object') {
     return res.status(400).json({ error: 'permissions object required' });
   }
-  savePermissions(permissions);
+  const { skipped } = savePermissions(permissions);
   writeAudit({
     userId: authReq.user.id,
     action: 'admin.permissions_update',
@@ -185,7 +185,7 @@ router.put('/permissions', (req: Request, res: Response) => {
     ip: getClientIp(req),
     details: permissions,
   });
-  res.json({ success: true, permissions: getAllPermissions() });
+  res.json({ success: true, permissions: getAllPermissions(), ...(skipped.length ? { skipped } : {}) });
 });
 
 router.get('/audit-log', (req: Request, res: Response) => {

@@ -649,7 +649,8 @@ export default function BudgetPanel({ tripId, tripMembers = [] }: BudgetPanelPro
           <div style={{ marginBottom: 12 }}>
             <CustomSelect
               value={currency}
-              onChange={canEdit ? setCurrency : () => {}}
+              onChange={setCurrency}
+              disabled={!canEdit}
               options={CURRENCIES.map(c => ({ value: c, label: `${c} (${SYMBOLS[c] || c})` }))}
               searchable
             />

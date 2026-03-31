@@ -740,7 +740,7 @@ export default function CollabChat({ tripId, currentUser }: CollabChatProps) {
                           {msg.reactions.map(r => {
                             const myReaction = r.users.some(u => String(u.user_id) === String(currentUser.id))
                             return (
-                              <ReactionBadge key={r.emoji} reaction={r} currentUserId={currentUser.id} onReact={() => canEdit && handleReact(msg.id, r.emoji)} />
+                              <ReactionBadge key={r.emoji} reaction={r} currentUserId={currentUser.id} onReact={() => { if (canEdit) handleReact(msg.id, r.emoji) }} />
                             )
                           })}
                         </div>

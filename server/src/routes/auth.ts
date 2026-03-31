@@ -10,13 +10,13 @@ import fetch from 'node-fetch';
 import { authenticator } from 'otplib';
 import QRCode from 'qrcode';
 import { db } from '../db/database';
-import { authenticate, demoUploadBlock } from '../middleware/auth';
+import { authenticate, optionalAuth, demoUploadBlock } from '../middleware/auth';
 import { JWT_SECRET } from '../config';
 import { encryptMfaSecret, decryptMfaSecret } from '../services/mfaCrypto';
 import { getAllPermissions } from '../services/permissions';
 import { randomBytes, createHash } from 'crypto';
 import { revokeUserSessions } from '../mcp';
-import { AuthRequest, User } from '../types';
+import { AuthRequest, OptionalAuthRequest, User } from '../types';
 import { writeAudit, getClientIp } from '../services/auditLog';
 import { decrypt_api_key, maybe_encrypt_api_key } from '../services/apiKeyCrypto';
 import { startTripReminders } from '../scheduler';
@@ -171,7 +171,7 @@ function generateToken(user: { id: number | bigint }) {
   );
 }
 
-router.get('/app-config', (_req: Request, res: Response) => {
+router.get('/app-config', optionalAuth, (req: Request, res: Response) => {
   const userCount = (db.prepare('SELECT COUNT(*) as count FROM users').get() as { count: number }).count;
   const setting = db.prepare("SELECT value FROM app_settings WHERE key = 'allow_registration'").get() as { value: string } | undefined;
   const allowRegistration = userCount === 0 || (setting?.value ?? 'true') === 'true';
@@ -210,7 +210,7 @@ router.get('/app-config', (_req: Request, res: Response) => {
     timezone: process.env.TZ || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
     notification_channel: notifChannel,
     trip_reminders_enabled: tripRemindersEnabled,
-    permissions: getAllPermissions(),
+    permissions: (req as OptionalAuthRequest).user ? getAllPermissions() : undefined,
   });
 });
 

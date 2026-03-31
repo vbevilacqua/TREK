@@ -218,19 +218,17 @@ function UserAvatar({ user, size = 14 }: UserAvatarProps) {
 interface NoteFormModalProps {
   onClose: () => void
   onSubmit: (data: { title: string; content: string; category: string; website: string; files?: File[] }) => Promise<void>
-  onDeleteFile: (noteId: number, fileId: number) => Promise<void>
+  onDeleteFile?: (noteId: number, fileId: number) => Promise<void>
   existingCategories: string[]
   categoryColors: Record<string, string>
   getCategoryColor: (category: string) => string
-  note: CollabNote | null
-  tripId: number
+  note?: CollabNote | null
+  tripId?: number
   t: (key: string) => string
+  canUploadFiles?: boolean
 }
 
-function NoteFormModal({ onClose, onSubmit, onDeleteFile, existingCategories, categoryColors, getCategoryColor, note, tripId, t }: NoteFormModalProps) {
-  const can = useCanDo()
-  const tripObj = useTripStore((s) => s.trip)
-  const canUploadFiles = can('file_upload', tripObj)
+function NoteFormModal({ onClose, onSubmit, onDeleteFile, existingCategories, categoryColors, getCategoryColor, note, tripId, t, canUploadFiles = true }: NoteFormModalProps) {
   const isEdit = !!note
   const allCategories = [...new Set([...existingCategories, ...Object.keys(categoryColors || {})])].filter(Boolean)
 
@@ -889,6 +887,7 @@ export default function CollabNotes({ tripId, currentUser }: CollabNotesProps) {
   const can = useCanDo()
   const trip = useTripStore((s) => s.trip)
   const canEdit = can('collab_edit', trip)
+  const canUploadFiles = can('file_upload', trip)
   const [notes, setNotes] = useState([])
   const [loading, setLoading] = useState(true)
   const [showNewModal, setShowNewModal] = useState(false)
@@ -1343,6 +1342,7 @@ export default function CollabNotes({ tripId, currentUser }: CollabNotesProps) {
           existingCategories={categories}
           categoryColors={categoryColors}
           getCategoryColor={getCategoryColor}
+          canUploadFiles={canUploadFiles}
           t={t}
         />
       )}
@@ -1358,6 +1358,7 @@ export default function CollabNotes({ tripId, currentUser }: CollabNotesProps) {
           existingCategories={categories}
           categoryColors={categoryColors}
           getCategoryColor={getCategoryColor}
+          canUploadFiles={canUploadFiles}
           t={t}
         />
       )}
