@@ -34,6 +34,13 @@ apiClient.interceptors.response.use(
         window.location.href = '/login'
       }
     }
+    if (
+      error.response?.status === 403 &&
+      (error.response?.data as { code?: string } | undefined)?.code === 'MFA_REQUIRED' &&
+      !window.location.pathname.startsWith('/settings')
+    ) {
+      window.location.href = '/settings?mfa=required'
+    }
     return Promise.reject(error)
   }
 )
@@ -44,7 +51,7 @@ export const authApi = {
   login: (data: { email: string; password: string }) => apiClient.post('/auth/login', data).then(r => r.data),
   verifyMfaLogin: (data: { mfa_token: string; code: string }) => apiClient.post('/auth/mfa/verify-login', data).then(r => r.data),
   mfaSetup: () => apiClient.post('/auth/mfa/setup', {}).then(r => r.data),
-  mfaEnable: (data: { code: string }) => apiClient.post('/auth/mfa/enable', data).then(r => r.data),
+  mfaEnable: (data: { code: string }) => apiClient.post('/auth/mfa/enable', data).then(r => r.data as { success: boolean; mfa_enabled: boolean; backup_codes?: string[] }),
   mfaDisable: (data: { password: string; code: string }) => apiClient.post('/auth/mfa/disable', data).then(r => r.data),
   me: () => apiClient.get('/auth/me').then(r => r.data),
   updateMapsKey: (key: string | null) => apiClient.put('/auth/me/maps-key', { maps_api_key: key }).then(r => r.data),
@@ -61,6 +68,11 @@ export const authApi = {
   changePassword: (data: { current_password: string; new_password: string }) => apiClient.put('/auth/me/password', data).then(r => r.data),
   deleteOwnAccount: () => apiClient.delete('/auth/me').then(r => r.data),
   demoLogin: () => apiClient.post('/auth/demo-login').then(r => r.data),
+  mcpTokens: {
+    list: () => apiClient.get('/auth/mcp-tokens').then(r => r.data),
+    create: (name: string) => apiClient.post('/auth/mcp-tokens', { name }).then(r => r.data),
+    delete: (id: number) => apiClient.delete(`/auth/mcp-tokens/${id}`).then(r => r.data),
+  },
 }
 
 export const tripsApi = {
@@ -170,6 +182,8 @@ export const adminApi = {
   deleteInvite: (id: number) => apiClient.delete(`/admin/invites/${id}`).then(r => r.data),
   auditLog: (params?: { limit?: number; offset?: number }) =>
     apiClient.get('/admin/audit-log', { params }).then(r => r.data),
+  mcpTokens: () => apiClient.get('/admin/mcp-tokens').then(r => r.data),
+  deleteMcpToken: (id: number) => apiClient.delete(`/admin/mcp-tokens/${id}`).then(r => r.data),
 }
 
 export const addonsApi = {

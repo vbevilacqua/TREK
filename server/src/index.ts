@@ -1,5 +1,7 @@
 import 'dotenv/config';
+import './config';
 import express, { Request, Response, NextFunction } from 'express';
+import { enforceGlobalMfaPolicy } from './middleware/mfaPolicy';
 import cors from 'cors';
 import helmet from 'helmet';
 import path from 'path';
@@ -79,6 +81,8 @@ if (shouldForceHttps) {
 }
 app.use(express.json({ limit: '100kb' }));
 app.use(express.urlencoded({ extended: true }));
+
+app.use(enforceGlobalMfaPolicy);
 
 if (DEBUG) {
   app.use((req: Request, res: Response, next: NextFunction) => {
@@ -197,6 +201,12 @@ app.use('/api/notifications', notificationRoutes);
 import shareRoutes from './routes/share';
 app.use('/api', shareRoutes);
 
+// MCP endpoint (Streamable HTTP transport, per-user auth)
+import { mcpHandler, closeMcpSessions } from './mcp';
+app.post('/mcp', mcpHandler);
+app.get('/mcp', mcpHandler);
+app.delete('/mcp', mcpHandler);
+
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
   const publicPath = path.join(__dirname, '../public');
@@ -242,6 +252,7 @@ const server = app.listen(PORT, () => {
 function shutdown(signal: string): void {
   console.log(`\n${signal} received — shutting down gracefully...`);
   scheduler.stop();
+  closeMcpSessions();
   server.close(() => {
     console.log('HTTP server closed');
     const { closeDb } = require('./db/database');
