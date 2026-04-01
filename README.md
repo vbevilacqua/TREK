@@ -98,7 +98,9 @@
 ## Quick Start
 
 ```bash
-docker run -d -p 3000:3000 -v ./data:/app/data -v ./uploads:/app/uploads mauriceboe/trek
+ENCRYPTION_KEY=$(openssl rand -hex 32) docker run -d -p 3000:3000 \
+  -e ENCRYPTION_KEY=$ENCRYPTION_KEY \
+  -v ./data:/app/data -v ./uploads:/app/uploads mauriceboe/trek
 ```
 
 The app runs on port `3000`. The first user to register becomes the admin.
@@ -114,6 +116,13 @@ TREK works as a Progressive Web App — no App Store needed:
 
 <details>
 <summary>Docker Compose (recommended for production)</summary>
+
+First, create a `.env` file next to your `docker-compose.yml`:
+
+```bash
+# Generate a random encryption key (required)
+echo "ENCRYPTION_KEY=$(openssl rand -hex 32)" >> .env
+```
 
 ```yaml
 services:
@@ -136,7 +145,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - ENCRYPTION_KEY=${ENCRYPTION_KEY} # Required. Generate with: openssl rand -hex 32. Upgrading? Set this to the contents of ./data/.jwt_secret to keep existing encrypted secrets readable.
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY} # Required — see .env setup above
       - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-} # Comma-separated origins for CORS and email notification links
       - TZ=${TZ:-UTC} # Timezone for logs, reminders and scheduled tasks (e.g. Europe/Berlin)
       - LOG_LEVEL=${LOG_LEVEL:-info} # info = concise user actions; debug = verbose admin-level details
@@ -178,6 +187,18 @@ docker run -d --name trek -p 3000:3000 -v ./data:/app/data -v ./uploads:/app/upl
 > **Tip:** Not sure which paths you used? Run `docker inspect trek --format '{{json .Mounts}}'` before removing the container.
 
 Your data is persisted in the mounted `data` and `uploads` volumes — updates never touch your existing data.
+
+### Rotating the Encryption Key
+
+If you need to rotate `ENCRYPTION_KEY` (e.g. you are upgrading from a version that derived encryption from `JWT_SECRET`), use the migration script to re-encrypt all stored secrets under the new key without starting the app:
+
+```bash
+docker exec -it trek node --import tsx scripts/migrate-encryption.ts
+```
+
+The script will prompt for your old and new keys interactively (input is not echoed). It creates a timestamped database backup before making any changes and exits with a non-zero code if anything fails.
+
+**Upgrading from a previous version?** Your old JWT secret is in `./data/.jwt_secret`. Use its contents as the "old key" and your new `ENCRYPTION_KEY` value as the "new key".
 
 ### Reverse Proxy (recommended)
 
