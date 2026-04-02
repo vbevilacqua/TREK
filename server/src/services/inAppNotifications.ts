@@ -1,6 +1,6 @@
 import { db } from '../db/database';
 import { broadcastToUser } from '../websocket';
-import { getAction } from './notificationActions';
+import { getAction } from './inAppNotificationActions';
 
 type NotificationType = 'simple' | 'boolean' | 'navigate';
 type NotificationScope = 'trip' | 'user' | 'admin';
