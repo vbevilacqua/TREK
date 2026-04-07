@@ -8,19 +8,9 @@ const flushPromises = () => new Promise<void>(r => setTimeout(r, 10));
 
 beforeEach(() => {
   clearImageQueue();
-  vi.restoreAllMocks(); // restore any vi.spyOn() wrappers from the previous test
-  vi.unstubAllGlobals(); // restore any vi.stubGlobal() replacements from the previous test
-
-  // jsdom's URL.createObjectURL is non-writable/non-configurable in some CI
-  // environments — direct assignment and Object.defineProperty both fail
-  // silently. vi.stubGlobal replaces globalThis.URL entirely, which always
-  // works. We extend the real URL so all URL parsing behaviour is preserved.
-  const OriginalURL = URL;
-  class TestURL extends OriginalURL {
-    static createObjectURL = vi.fn(() => 'blob:mock');
-    static revokeObjectURL = vi.fn();
-  }
-  vi.stubGlobal('URL', TestURL);
+  vi.restoreAllMocks(); // remove vi.spyOn() wrappers, restoring to the setup.ts vi.fn()
+  vi.clearAllMocks();   // reset accumulated call counts on window.URL mocks from setup.ts
+  vi.unstubAllGlobals();
 });
 
 // ── getAuthUrl ─────────────────────────────────────────────────────────────────
@@ -204,7 +194,7 @@ describe('clearImageQueue', () => {
   describe('FE-COMP-AUTHURL-012: clearImageQueue discards pending entries', () => {
     it('removes queued items so they never execute after active slots drain', async () => {
       const resolvers: Array<() => void> = [];
-      const createObjectURLSpy = vi.spyOn(URL, 'createObjectURL');
+      const createObjectURLSpy = vi.spyOn(window.URL, 'createObjectURL');
 
       vi.spyOn(globalThis, 'fetch').mockImplementation(async () => {
         await new Promise<void>(r => resolvers.push(r));
