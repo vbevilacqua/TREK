@@ -14,6 +14,7 @@ import {
   deletePlace,
   importGpx,
   importGoogleList,
+  importNaverList,
   searchPlaceImage,
 } from '../services/placeService';
 
@@ -96,6 +97,35 @@ router.post('/import/google-list', authenticate, requireTripAccess, async (req: 
   } catch (err: unknown) {
     console.error('[Places] Google list import error:', err instanceof Error ? err.message : err);
     res.status(400).json({ error: 'Failed to import Google Maps list. Make sure the list is shared publicly.' });
+  }
+});
+
+// Import places from a shared Naver Maps list URL
+router.post('/import/naver-list', authenticate, requireTripAccess, async (req: Request, res: Response) => {
+  const authReq = req as AuthRequest;
+  if (!checkPermission('place_edit', authReq.user.role, authReq.trip!.user_id, authReq.user.id, authReq.trip!.user_id !== authReq.user.id))
+    return res.status(403).json({ error: 'No permission' });
+
+  const { tripId } = req.params;
+  const { url } = req.body;
+  if (!url || typeof url !== 'string') return res.status(400).json({ error: 'URL is required' });
+
+  try {
+    const result = await importNaverList(tripId, url);
+
+    if ('error' in result) {
+      return res.status(result.status).json({ error: result.error });
+    }
+
+    const successResult = result as { places: any[]; listName: string };
+
+    res.status(201).json({ places: successResult.places, count: successResult.places.length, listName: successResult.listName });
+    for (const place of successResult.places) {
+      broadcast(tripId, 'place:created', { place }, req.headers['x-socket-id'] as string);
+    }
+  } catch (err: unknown) {
+    console.error('[Places] Naver list import error:', err instanceof Error ? err.message : err);
+    res.status(400).json({ error: 'Failed to import Naver Maps list. Make sure the list is shared publicly.' });
   }
 });
 

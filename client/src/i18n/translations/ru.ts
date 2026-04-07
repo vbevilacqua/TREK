@@ -811,10 +811,14 @@ const ru: Record<string, string> = {
   'places.importGpx': 'GPX',
   'places.gpxImported': '{count} мест импортировано из GPX',
   'places.gpxError': 'Ошибка импорта GPX',
+  'places.importList': 'Импорт списка',
   'places.importGoogleList': 'Список Google',
   'places.googleListHint': 'Вставьте ссылку на общий список Google Maps для импорта всех мест.',
   'places.googleListImported': '{count} мест импортировано из "{list}"',
   'places.googleListError': 'Не удалось импортировать список Google Maps',
+  'places.naverListHint': 'Вставьте ссылку на общий список Naver Maps для импорта всех мест.',
+  'places.naverListImported': '{count} мест импортировано из "{list}"',
+  'places.naverListError': 'Не удалось импортировать список Naver Maps',
   'places.viewDetails': 'Подробности',
   'places.urlResolved': 'Место импортировано из URL',
   'places.assignToDay': 'Добавить в какой день?',
@@ -1549,6 +1553,7 @@ const ru: Record<string, string> = {
   'undo.lock': 'Блокировка места изменена',
   'undo.importGpx': 'Импорт GPX',
   'undo.importGoogleList': 'Импорт из Google Maps',
+  'undo.importNaverList': 'Импорт из Naver Maps',
 
   // Notifications
   'notifications.title': 'Уведомления',
