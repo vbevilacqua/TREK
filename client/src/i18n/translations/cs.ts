@@ -816,6 +816,7 @@ const cs: Record<string, string | { name: string; category: string }[]> = {
   'places.gpxError': 'Import GPX se nezdařil',
   'places.importList': 'Import seznamu',
   'places.importGoogleList': 'Google Seznam',
+  'places.importNaverList': 'Naver Seznam',
   'places.googleListHint': 'Vložte sdílený odkaz na seznam Google Maps pro import všech míst.',
   'places.googleListImported': '{count} míst importováno ze seznamu "{list}"',
   'places.googleListError': 'Import seznamu Google Maps se nezdařil',

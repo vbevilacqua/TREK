@@ -1497,6 +1497,7 @@ const pl: Record<string, string | { name: string; category: string }[]> = {
   'atlas.searchCountry': 'Szukaj kraju...',
   'trip.loadingPhotos': 'Ładowanie zdjęć...',
   'places.importGoogleList': 'Lista Google',
+  'places.importNaverList': 'Lista Naver',
   'places.importList': 'Import listy',
   'places.googleListHint': 'Wklej link do listy Google Maps.',
   'places.googleListImported': 'Zaimportowano {count} miejsc',

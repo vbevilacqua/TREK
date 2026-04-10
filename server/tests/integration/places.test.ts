@@ -521,10 +521,27 @@ describe('Naver list import', () => {
     vi.unstubAllGlobals();
   });
 
+  it('POST /import/naver-list returns 403 when addon is disabled', async () => {
+    const { user } = createUser(testDb);
+    const trip = createTrip(testDb, user.id);
+
+    testDb.prepare("UPDATE addons SET enabled = 0 WHERE id = 'naver_list_import'").run();
+
+    const res = await request(app)
+      .post(`/api/trips/${trip.id}/places/import/naver-list`)
+      .set('Cookie', authCookie(user.id))
+      .send({ url: 'https://naver.me/GYDpx3Wv' });
+
+    expect(res.status).toBe(403);
+    expect(res.body.error).toContain('addon is disabled');
+  });
+
   it('POST /import/naver-list resolves shortlink, paginates, and creates places', async () => {
     const { user } = createUser(testDb);
     const trip = createTrip(testDb, user.id);
     const folderId = 'a04c3f7a8dd24d42a8eb52d710a700cc';
+
+    testDb.prepare("UPDATE addons SET enabled = 1 WHERE id = 'naver_list_import'").run();
 
     const fetchMock = vi.fn()
       .mockResolvedValueOnce({
@@ -575,6 +592,8 @@ describe('Naver list import', () => {
   it('POST /import/naver-list returns 400 for invalid URL', async () => {
     const { user } = createUser(testDb);
     const trip = createTrip(testDb, user.id);
+
+    testDb.prepare("UPDATE addons SET enabled = 1 WHERE id = 'naver_list_import'").run();
 
     const res = await request(app)
       .post(`/api/trips/${trip.id}/places/import/naver-list`)

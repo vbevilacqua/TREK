@@ -814,6 +814,7 @@ const nl: Record<string, string> = {
   'places.gpxError': 'GPX-import mislukt',
   'places.importList': 'Lijst importeren',
   'places.importGoogleList': 'Google Lijst',
+  'places.importNaverList': 'Naver Lijst',
   'places.googleListHint': 'Plak een gedeelde Google Maps lijstlink om alle plaatsen te importeren.',
   'places.googleListImported': '{count} plaatsen geimporteerd uit "{list}"',
   'places.googleListError': 'Google Maps lijst importeren mislukt',

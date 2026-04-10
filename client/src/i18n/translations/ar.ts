@@ -817,6 +817,7 @@ const ar: Record<string, string | { name: string; category: string }[]> = {
   'places.gpxError': 'فشل استيراد GPX',
   'places.importList': 'استيراد قائمة',
   'places.importGoogleList': 'قائمة Google',
+  'places.importNaverList': 'قائمة Naver',
   'places.googleListHint': 'الصق رابط قائمة Google Maps المشتركة لاستيراد جميع الأماكن.',
   'places.googleListImported': 'تم استيراد {count} أماكن من "{list}"',
   'places.googleListError': 'فشل استيراد قائمة Google Maps',

@@ -816,6 +816,7 @@ const hu: Record<string, string | { name: string; category: string }[]> = {
   'places.gpxError': 'GPX importálás sikertelen',
   'places.importList': 'Lista importálás',
   'places.importGoogleList': 'Google Lista',
+  'places.importNaverList': 'Naver Lista',
   'places.googleListHint': 'Illessz be egy megosztott Google Maps lista linket az osszes hely importalasahoz.',
   'places.googleListImported': '{count} hely importalva a(z) "{list}" listabol',
   'places.googleListError': 'Google Maps lista importalasa sikertelen',

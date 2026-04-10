@@ -814,6 +814,7 @@ const ru: Record<string, string> = {
   'places.gpxError': 'Ошибка импорта GPX',
   'places.importList': 'Импорт списка',
   'places.importGoogleList': 'Список Google',
+  'places.importNaverList': 'Список Naver',
   'places.googleListHint': 'Вставьте ссылку на общий список Google Maps для импорта всех мест.',
   'places.googleListImported': '{count} мест импортировано из "{list}"',
   'places.googleListError': 'Не удалось импортировать список Google Maps',

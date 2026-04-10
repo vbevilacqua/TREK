@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { useState, useRef, useMemo, useCallback } from 'react'
+import { useState, useRef, useMemo, useCallback, useEffect } from 'react'
 import DOM from 'react-dom'
 import { Search, Plus, X, CalendarDays, Pencil, Trash2, ExternalLink, Navigation, Upload, ChevronDown, Check, MapPin, Eye } from 'lucide-react'
 import PlaceAvatar from '../shared/PlaceAvatar'
@@ -12,6 +12,7 @@ import { useContextMenu, ContextMenu } from '../shared/ContextMenu'
 import { placesApi } from '../../api/client'
 import { useTripStore } from '../../store/tripStore'
 import { useCanDo } from '../../store/permissionsStore'
+import { useAddonStore } from '../../store/addonStore'
 import type { Place, Category, Day, AssignmentsMap } from '../../types'
 
 interface PlacesSidebarProps {
@@ -45,6 +46,7 @@ const PlacesSidebar = React.memo(function PlacesSidebar({
   const loadTrip = useTripStore((s) => s.loadTrip)
   const can = useCanDo()
   const canEditPlaces = can('place_edit', trip)
+  const isNaverListImportEnabled = useAddonStore((s) => s.isEnabled('naver_list_import'))
 
   const handleGpxImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -72,21 +74,30 @@ const PlacesSidebar = React.memo(function PlacesSidebar({
   const [listImportUrl, setListImportUrl] = useState('')
   const [listImportLoading, setListImportLoading] = useState(false)
   const [listImportProvider, setListImportProvider] = useState<'google' | 'naver'>('google')
+  const availableListImportProviders: Array<'google' | 'naver'> = isNaverListImportEnabled ? ['google', 'naver'] : ['google']
+  const hasMultipleListImportProviders = availableListImportProviders.length > 1
+
+  useEffect(() => {
+    if (!isNaverListImportEnabled && listImportProvider === 'naver') {
+      setListImportProvider('google')
+    }
+  }, [isNaverListImportEnabled, listImportProvider])
 
   const handleListImport = async () => {
     if (!listImportUrl.trim()) return
     setListImportLoading(true)
     try {
-      const result = listImportProvider === 'google'
+      const provider = listImportProvider === 'naver' && isNaverListImportEnabled ? 'naver' : 'google'
+      const result = provider === 'google'
         ? await placesApi.importGoogleList(tripId, listImportUrl.trim())
         : await placesApi.importNaverList(tripId, listImportUrl.trim())
       await loadTrip(tripId)
-      toast.success(t(listImportProvider === 'google' ? 'places.googleListImported' : 'places.naverListImported', { count: result.count, list: result.listName }))
+      toast.success(t(provider === 'google' ? 'places.googleListImported' : 'places.naverListImported', { count: result.count, list: result.listName }))
       setListImportOpen(false)
       setListImportUrl('')
       if (result.places?.length > 0) {
         const importedIds: number[] = result.places.map((p: { id: number }) => p.id)
-        pushUndo?.(t(listImportProvider === 'google' ? 'undo.importGoogleList' : 'undo.importNaverList'), async () => {
+        pushUndo?.(t(provider === 'google' ? 'undo.importGoogleList' : 'undo.importNaverList'), async () => {
           for (const id of importedIds) {
             try { await placesApi.delete(tripId, id) } catch {}
           }
@@ -94,7 +105,8 @@ const PlacesSidebar = React.memo(function PlacesSidebar({
         })
       }
     } catch (err: any) {
-      toast.error(err?.response?.data?.error || t(listImportProvider === 'google' ? 'places.googleListError' : 'places.naverListError'))
+      const provider = listImportProvider === 'naver' && isNaverListImportEnabled ? 'naver' : 'google'
+      toast.error(err?.response?.data?.error || t(provider === 'google' ? 'places.googleListError' : 'places.naverListError'))
     } finally {
       setListImportLoading(false)
     }
@@ -173,7 +185,7 @@ const PlacesSidebar = React.memo(function PlacesSidebar({
               cursor: 'pointer', fontFamily: 'inherit',
             }}
           >
-            <MapPin size={11} strokeWidth={2} /> {t('places.importList')}
+            <MapPin size={11} strokeWidth={2} /> {t(hasMultipleListImportProviders ? 'places.importList' : 'places.importGoogleList')}
           </button>
         </div>
         </>}
@@ -463,22 +475,24 @@ const PlacesSidebar = React.memo(function PlacesSidebar({
             <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>
               {t('places.importList')}
             </div>
-            <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
-              {(['google', 'naver'] as const).map(provider => (
-                <button
-                  key={provider}
-                  onClick={() => setListImportProvider(provider)}
-                  style={{
-                    padding: '6px 10px', borderRadius: 20, border: 'none', cursor: 'pointer',
-                    fontSize: 11, fontWeight: 600, fontFamily: 'inherit',
-                    background: listImportProvider === provider ? 'var(--accent)' : 'var(--bg-tertiary)',
-                    color: listImportProvider === provider ? 'var(--accent-text)' : 'var(--text-muted)',
-                  }}
-                >
-                  {provider === 'google' ? 'Google Maps' : 'Naver Maps'}
-                </button>
-              ))}
-            </div>
+            {hasMultipleListImportProviders && (
+              <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
+                {availableListImportProviders.map(provider => (
+                  <button
+                    key={provider}
+                    onClick={() => setListImportProvider(provider)}
+                    style={{
+                      padding: '6px 10px', borderRadius: 20, border: 'none', cursor: 'pointer',
+                      fontSize: 11, fontWeight: 600, fontFamily: 'inherit',
+                      background: listImportProvider === provider ? 'var(--accent)' : 'var(--bg-tertiary)',
+                      color: listImportProvider === provider ? 'var(--accent-text)' : 'var(--text-muted)',
+                    }}
+                  >
+                    {provider === 'google' ? t('places.importGoogleList') : t('places.importNaverList')}
+                  </button>
+                ))}
+              </div>
+            )}
             <div style={{ fontSize: 12, color: 'var(--text-faint)', marginBottom: 16 }}>
               {t(listImportProvider === 'google' ? 'places.googleListHint' : 'places.naverListHint')}
             </div>

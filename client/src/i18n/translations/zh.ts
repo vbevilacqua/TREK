@@ -814,6 +814,7 @@ const zh: Record<string, string> = {
   'places.gpxError': 'GPX 导入失败',
   'places.importList': '列表导入',
   'places.importGoogleList': 'Google 列表',
+  'places.importNaverList': 'Naver 列表',
   'places.googleListHint': '粘贴共享的 Google Maps 列表链接以导入所有地点。',
   'places.googleListImported': '已从"{list}"导入 {count} 个地点',
   'places.googleListError': 'Google Maps 列表导入失败',

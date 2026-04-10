@@ -794,6 +794,7 @@ const zhTw: Record<string, string> = {
   'places.gpxError': 'GPX 匯入失敗',
   'places.importList': '列表匯入',
   'places.importGoogleList': 'Google 列表',
+  'places.importNaverList': 'Naver 列表',
   'places.googleListHint': '貼上共享的 Google Maps 列表連結以匯入所有地點。',
   'places.googleListImported': '已從"{list}"匯入 {count} 個地點',
   'places.googleListError': 'Google Maps 列表匯入失敗',

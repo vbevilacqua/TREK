@@ -816,6 +816,7 @@ const it: Record<string, string | { name: string; category: string }[]> = {
   'places.gpxError': 'Importazione GPX non riuscita',
   'places.importList': 'Importa lista',
   'places.importGoogleList': 'Lista Google',
+  'places.importNaverList': 'Lista Naver',
   'places.googleListHint': 'Incolla un link condiviso di una lista Google Maps per importare tutti i luoghi.',
   'places.googleListImported': '{count} luoghi importati da "{list}"',
   'places.googleListError': 'Importazione lista Google Maps non riuscita',
