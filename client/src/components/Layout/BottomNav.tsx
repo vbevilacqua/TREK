@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAddonStore } from '../../store/addonStore'
 import { useAuthStore } from '../../store/authStore'
+import { useSettingsStore } from '../../store/settingsStore'
 import { useTranslation } from '../../i18n'
 import { Plane, CalendarDays, Globe, Compass, User, Settings, Shield, LogOut, X } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
@@ -18,6 +19,8 @@ const ADDON_NAV: Record<string, { to: string; label: string; icon: LucideIcon }>
 
 export default function BottomNav() {
   const { t } = useTranslation()
+  const darkMode = useSettingsStore(s => s.settings.dark_mode)
+  const dark = darkMode === true || darkMode === 'dark' || (darkMode === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)
   const addons = useAddonStore(s => s.addons)
   const globalAddons = addons.filter(a => a.type === 'global' && a.enabled)
   const [showProfile, setShowProfile] = useState(false)
@@ -35,7 +38,7 @@ export default function BottomNav() {
         style={{
           height: 'calc(84px + env(safe-area-inset-bottom, 0px))',
           paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-          background: 'rgba(255,255,255,0.96)',
+          background: dark ? 'rgba(9,9,11,0.96)' : 'rgba(255,255,255,0.96)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
         }}

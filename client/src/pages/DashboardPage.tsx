@@ -240,19 +240,11 @@ function SpotlightCard({ trip, onEdit, onCopy, onDelete, onArchive, onClick, t, 
         )}
 
         {/* Stats */}
-        <div className="grid grid-cols-4 gap-2.5 p-3.5 bg-black/25 backdrop-blur-sm border border-white/10 rounded-2xl">
-          {trip.start_date && !isLive && (
-            <div className="text-center">
-              <p className="text-[18px] font-extrabold tracking-[-0.02em] leading-none">{formatDateShort(trip.start_date, locale)}</p>
-              <p className="text-[9px] uppercase tracking-[0.1em] opacity-70 font-semibold mt-1">{t('dashboard.mobile.starts')}</p>
-            </div>
-          )}
-          {isLive && (
-            <div className="text-center">
-              <p className="text-[22px] font-extrabold tracking-[-0.02em] leading-none">{totalDays}</p>
-              <p className="text-[9px] uppercase tracking-[0.1em] opacity-70 font-semibold mt-1">{t('dashboard.mobile.duration')}</p>
-            </div>
-          )}
+        <div className="grid grid-cols-3 gap-2.5 p-3.5 bg-black/25 backdrop-blur-sm border border-white/10 rounded-2xl">
+          <div className="text-center">
+            <p className="text-[22px] font-extrabold tracking-[-0.02em] leading-none">{trip.day_count || totalDays}</p>
+            <p className="text-[9px] uppercase tracking-[0.1em] opacity-70 font-semibold mt-1">{t('dashboard.mobile.days')}</p>
+          </div>
           <div className="text-center">
             <p className="text-[22px] font-extrabold tracking-[-0.02em] leading-none">{trip.place_count || 0}</p>
             <p className="text-[9px] uppercase tracking-[0.1em] opacity-70 font-semibold mt-1">{t('dashboard.mobile.places')}</p>
@@ -261,12 +253,6 @@ function SpotlightCard({ trip, onEdit, onCopy, onDelete, onArchive, onClick, t, 
             <p className="text-[22px] font-extrabold tracking-[-0.02em] leading-none">{trip.shared_count || 0}</p>
             <p className="text-[9px] uppercase tracking-[0.1em] opacity-70 font-semibold mt-1">{t('dashboard.mobile.buddies')}</p>
           </div>
-          {!isLive && (
-            <div className="text-center">
-              <p className="text-[22px] font-extrabold tracking-[-0.02em] leading-none">{trip.day_count || totalDays}</p>
-              <p className="text-[9px] uppercase tracking-[0.1em] opacity-70 font-semibold mt-1">{t('dashboard.mobile.days')}</p>
-            </div>
-          )}
         </div>
       </div>
     </div>
@@ -883,30 +869,26 @@ export default function DashboardPage(): React.ReactElement {
                 <span className="text-[10px] font-semibold" style={{ color: 'var(--text-primary)' }}>{t('dashboard.mobile.newTrip')}</span>
               </button>
             )}
-            {showCurrency && (
-              <button
-                onClick={() => setShowWidgetSettings('mobile-currency')}
-                className="flex flex-col items-center gap-2 py-3.5 rounded-2xl border border-zinc-200 dark:border-zinc-700"
-                style={{ background: 'var(--bg-card)' }}
-              >
-                <div className="w-9 h-9 rounded-[11px] flex items-center justify-center" style={{ background: '#DBEAFE', color: '#1E40AF' }}>
-                  <ArrowRightLeft size={16} />
-                </div>
-                <span className="text-[10px] font-semibold" style={{ color: 'var(--text-primary)' }}>{t('dashboard.mobile.currency')}</span>
-              </button>
-            )}
-            {showTimezone && (
-              <button
-                onClick={() => setShowWidgetSettings('mobile-timezone')}
-                className="flex flex-col items-center gap-2 py-3.5 rounded-2xl border border-zinc-200 dark:border-zinc-700"
-                style={{ background: 'var(--bg-card)' }}
-              >
-                <div className="w-9 h-9 rounded-[11px] flex items-center justify-center" style={{ background: '#DCFCE7', color: '#15803D' }}>
-                  <Clock size={16} />
-                </div>
-                <span className="text-[10px] font-semibold" style={{ color: 'var(--text-primary)' }}>{t('dashboard.mobile.timezone')}</span>
-              </button>
-            )}
+            <button
+              onClick={() => setShowWidgetSettings('mobile-currency')}
+              className="flex flex-col items-center gap-2 py-3.5 rounded-2xl border border-zinc-200 dark:border-zinc-700"
+              style={{ background: 'var(--bg-card)' }}
+            >
+              <div className="w-9 h-9 rounded-[11px] flex items-center justify-center" style={{ background: '#DBEAFE', color: '#1E40AF' }}>
+                <ArrowRightLeft size={16} />
+              </div>
+              <span className="text-[10px] font-semibold" style={{ color: 'var(--text-primary)' }}>{t('dashboard.mobile.currency')}</span>
+            </button>
+            <button
+              onClick={() => setShowWidgetSettings('mobile-timezone')}
+              className="flex flex-col items-center gap-2 py-3.5 rounded-2xl border border-zinc-200 dark:border-zinc-700"
+              style={{ background: 'var(--bg-card)' }}
+            >
+              <div className="w-9 h-9 rounded-[11px] flex items-center justify-center" style={{ background: '#DCFCE7', color: '#15803D' }}>
+                <Clock size={16} />
+              </div>
+              <span className="text-[10px] font-semibold" style={{ color: 'var(--text-primary)' }}>{t('dashboard.mobile.timezone')}</span>
+            </button>
           </div>
 
           {/* Desktop header */}
@@ -1161,8 +1143,8 @@ export default function DashboardPage(): React.ReactElement {
               </button>
             </div>
             <div className="flex-1 overflow-auto p-4 space-y-4" style={{ borderTop: '1px solid var(--border-secondary)' }}>
-              {(showWidgetSettings === 'mobile' || showWidgetSettings === 'mobile-currency') && showCurrency && <CurrencyWidget />}
-              {(showWidgetSettings === 'mobile' || showWidgetSettings === 'mobile-timezone') && showTimezone && <TimezoneWidget />}
+              {(showWidgetSettings === 'mobile' || showWidgetSettings === 'mobile-currency') && <CurrencyWidget />}
+              {(showWidgetSettings === 'mobile' || showWidgetSettings === 'mobile-timezone') && <TimezoneWidget />}
             </div>
           </div>
         </div>

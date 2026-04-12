@@ -759,7 +759,7 @@ export default function AtlasPage(): React.ReactElement {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--bg-primary)' }}>
+    <div className="h-screen overflow-hidden" style={{ background: 'var(--bg-primary)' }}>
       <Navbar />
       <div style={{ position: 'fixed', top: 'var(--nav-h)', left: 0, right: 0, bottom: 'env(safe-area-inset-bottom, 0px)' }}>
         {/* Map */}
