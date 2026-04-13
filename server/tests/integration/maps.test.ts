@@ -314,7 +314,7 @@ describe('Maps autocomplete', () => {
     const res = await request(app)
       .post('/api/maps/autocomplete')
       .set('Cookie', authCookie(user.id))
-      .send({ input: 'Paris', locationBias: { lat: NaN, lng: 2.3 } });
+      .send({ input: 'Paris', locationBias: { low: { lat: NaN, lng: 2.3 }, high: { lat: 49, lng: 3 } } });
     expect(res.status).toBe(400);
   });
 
@@ -348,13 +348,13 @@ describe('Maps autocomplete', () => {
     await request(app)
       .post('/api/maps/autocomplete')
       .set('Cookie', authCookie(user.id))
-      .send({ input: 'test', lang: 'fr', locationBias: { lat: 48.8, lng: 2.3 } });
+      .send({ input: 'test', lang: 'fr', locationBias: { low: { lat: 48.5, lng: 2.0 }, high: { lat: 49.0, lng: 2.8 } } });
 
     expect(mapsService.autocompletePlaces).toHaveBeenCalledWith(
       user.id,
       'test',
       'fr',
-      { lat: 48.8, lng: 2.3 },
+      { low: { lat: 48.5, lng: 2.0 }, high: { lat: 49.0, lng: 2.8 } },
     );
   });
 

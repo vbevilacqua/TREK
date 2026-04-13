@@ -840,14 +840,14 @@ describe('autocompletePlaces (fetch stubbed)', () => {
     });
     vi.stubGlobal('fetch', fetchMock);
     const { autocompletePlaces } = await import('../../../src/services/mapsService');
-    await autocompletePlaces(1, 'test', 'en', { lat: 48.8, lng: 2.3 });
+    await autocompletePlaces(1, 'test', 'en', { low: { lat: 48.5, lng: 2.0 }, high: { lat: 49.0, lng: 2.8 } });
 
     expect(fetchMock).toHaveBeenCalledOnce();
     const body = JSON.parse(fetchMock.mock.calls[0][1].body);
     expect(body.locationBias).toEqual({
-      circle: {
-        center: { latitude: 48.8, longitude: 2.3 },
-        radius: 50000.0,
+      rectangle: {
+        low: { latitude: 48.5, longitude: 2.0 },
+        high: { latitude: 49.0, longitude: 2.8 },
       },
     });
   });

@@ -124,14 +124,31 @@ export default function PlaceFormModal({
     setPendingFiles([])
   }, [place, prefillCoords, isOpen])
 
-  // Derive location bias from the trip's existing places
+  // Derive location bias bounding box from the trip's existing places
   const places = useTripStore((s) => s.places)
   const locationBias = useMemo(() => {
-    const firstWithCoords = places?.find((p) => p.lat != null && p.lng != null)
-    if (!firstWithCoords) return undefined
-    const lat = Number(firstWithCoords.lat)
-    const lng = Number(firstWithCoords.lng)
-    return Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : undefined
+    const withCoords = (places || []).filter((p) => p.lat != null && p.lng != null)
+    if (withCoords.length === 0) return undefined
+
+    let minLat = Infinity, maxLat = -Infinity, minLng = Infinity, maxLng = -Infinity
+    for (const p of withCoords) {
+      const lat = Number(p.lat), lng = Number(p.lng)
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) continue
+      if (lat < minLat) minLat = lat
+      if (lat > maxLat) maxLat = lat
+      if (lng < minLng) minLng = lng
+      if (lng > maxLng) maxLng = lng
+    }
+    if (!Number.isFinite(minLat)) return undefined
+
+    // Skip bias if the bounding box is too large (~500 km diagonal)
+    const dlat = maxLat - minLat
+    const dlng = maxLng - minLng
+    const avgLatRad = ((minLat + maxLat) / 2) * (Math.PI / 180)
+    const diagKm = Math.sqrt((dlat * 111) ** 2 + (dlng * 111 * Math.cos(avgLatRad)) ** 2)
+    if (diagKm > 500) return undefined
+
+    return { low: { lat: minLat, lng: minLng }, high: { lat: maxLat, lng: maxLng } }
   }, [places])
 
   // Debounced autocomplete

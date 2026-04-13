@@ -319,7 +319,7 @@ export async function autocompletePlaces(
   userId: number,
   input: string,
   lang?: string,
-  locationBias?: { lat: number; lng: number },
+  locationBias?: { low: { lat: number; lng: number }; high: { lat: number; lng: number } },
 ): Promise<{ suggestions: { placeId: string; mainText: string; secondaryText: string }[]; source: string }> {
   const apiKey = getMapsKey(userId);
 
@@ -333,9 +333,9 @@ export async function autocompletePlaces(
   };
   if (locationBias) {
     body.locationBias = {
-      circle: {
-        center: { latitude: locationBias.lat, longitude: locationBias.lng },
-        radius: 50000.0,
+      rectangle: {
+        low: { latitude: locationBias.low.lat, longitude: locationBias.low.lng },
+        high: { latitude: locationBias.high.lat, longitude: locationBias.high.lng },
       },
     };
   }

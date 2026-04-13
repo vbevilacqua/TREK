@@ -39,8 +39,13 @@ router.post('/autocomplete', authenticate, async (req: Request, res: Response) =
     return res.status(400).json({ error: 'Input is required' });
   }
 
-  if (locationBias && (!Number.isFinite(locationBias.lat) || !Number.isFinite(locationBias.lng))) {
-    return res.status(400).json({ error: 'Invalid locationBias: lat and lng must be finite numbers' });
+  if (locationBias) {
+    const { low, high } = locationBias;
+    if (!low || !high
+      || !Number.isFinite(low.lat) || !Number.isFinite(low.lng)
+      || !Number.isFinite(high.lat) || !Number.isFinite(high.lng)) {
+      return res.status(400).json({ error: 'Invalid locationBias: low and high must have finite lat and lng' });
+    }
   }
 
   try {
@@ -48,7 +53,7 @@ router.post('/autocomplete', authenticate, async (req: Request, res: Response) =
       authReq.user.id,
       input,
       lang as string,
-      locationBias as { lat: number; lng: number } | undefined,
+      locationBias as { low: { lat: number; lng: number }; high: { lat: number; lng: number } } | undefined,
     );
     res.json(result);
   } catch (err: unknown) {

@@ -917,12 +917,12 @@ describe('mapsApi', () => {
       })
     );
 
-    const result = await mapsApi.autocomplete('Par', 'fr', { lat: 48.8, lng: 2.3 });
+    const result = await mapsApi.autocomplete('Par', 'fr', { low: { lat: 48.5, lng: 2.0 }, high: { lat: 49.0, lng: 2.8 } });
 
     expect(capturedBody).toEqual({
       input: 'Par',
       lang: 'fr',
-      locationBias: { lat: 48.8, lng: 2.3 },
+      locationBias: { low: { lat: 48.5, lng: 2.0 }, high: { lat: 49.0, lng: 2.8 } },
     });
     expect(result.suggestions).toHaveLength(1);
     expect(result.suggestions[0].mainText).toBe('Paris');
