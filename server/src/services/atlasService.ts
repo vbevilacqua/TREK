@@ -171,12 +171,19 @@ export const CONTINENT_MAP: Record<string, string> = {
 
 // ── Geocoding helpers ───────────────────────────────────────────────────────
 
+let lastNominatimCall = 0;
+
 export async function reverseGeocodeCountry(lat: number, lng: number): Promise<string | null> {
   const key = roundKey(lat, lng);
   if (geocodeCache.has(key)) return geocodeCache.get(key)!;
+  // Nominatim rate limit: max 1 req/sec
+  const now = Date.now();
+  const elapsed = now - lastNominatimCall;
+  if (elapsed < 1100) await new Promise(r => setTimeout(r, 1100 - elapsed));
+  lastNominatimCall = Date.now();
   try {
     const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&zoom=3&accept-language=en`, {
-      headers: { 'User-Agent': 'TREK Travel Planner' },
+      headers: { 'User-Agent': 'TREK Travel Planner (https://github.com/mauriceboe/TREK)' },
     });
     if (!res.ok) return null;
     const data = await res.json() as { address?: { country_code?: string } };
@@ -215,15 +222,15 @@ export function getCountryFromAddress(address: string | null): string | null {
   return null;
 }
 
-// ── Resolve a place to a country code (address -> geocode -> bbox) ──────────
+// ── Resolve a place to a country code (address -> bbox -> geocode) ──────────
 
 async function resolveCountryCode(place: Place): Promise<string | null> {
   let code = getCountryFromAddress(place.address);
   if (!code && place.lat && place.lng) {
-    code = await reverseGeocodeCountry(place.lat, place.lng);
+    code = getCountryFromCoords(place.lat, place.lng);
   }
   if (!code && place.lat && place.lng) {
-    code = getCountryFromCoords(place.lat, place.lng);
+    code = await reverseGeocodeCountry(place.lat, place.lng);
   }
   return code;
 }
