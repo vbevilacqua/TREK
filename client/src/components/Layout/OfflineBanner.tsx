@@ -68,7 +68,10 @@ export default function OfflineBanner(): React.ReactElement | null {
         alignItems: 'center',
         justifyContent: 'center',
         gap: 8,
-        padding: '6px 16px',
+        paddingTop: 'calc(env(safe-area-inset-top, 0px) + 6px)',
+        paddingBottom: '6px',
+        paddingLeft: '16px',
+        paddingRight: '16px',
         fontSize: 13,
         fontWeight: 500,
       }}
