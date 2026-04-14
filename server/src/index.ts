@@ -48,6 +48,7 @@ const server = app.listen(PORT, () => {
   scheduler.startTripReminders();
   scheduler.startVersionCheck();
   scheduler.startDemoReset();
+  scheduler.startIdempotencyCleanup();
   const { startTokenCleanup } = require('./services/ephemeralTokens');
   startTokenCleanup();
   import('./websocket').then(({ setupWebSocket }) => {

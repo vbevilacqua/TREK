@@ -1,4 +1,4 @@
-import { packingApi } from '../../api/client'
+import { packingRepo } from '../../repo/packingRepo'
 import type { StoreApi } from 'zustand'
 import type { TripStoreState } from '../tripStore'
 import type { PackingItem } from '../../types'
@@ -17,7 +17,7 @@ export interface PackingSlice {
 export const createPackingSlice = (set: SetState, get: GetState): PackingSlice => ({
   addPackingItem: async (tripId, data) => {
     try {
-      const result = await packingApi.create(tripId, data)
+      const result = await packingRepo.create(tripId, data as Record<string, unknown>)
       set(state => ({ packingItems: [...state.packingItems, result.item] }))
       return result.item
     } catch (err: unknown) {
@@ -27,7 +27,7 @@ export const createPackingSlice = (set: SetState, get: GetState): PackingSlice =
 
   updatePackingItem: async (tripId, id, data) => {
     try {
-      const result = await packingApi.update(tripId, id, data)
+      const result = await packingRepo.update(tripId, id, data as Record<string, unknown>)
       set(state => ({
         packingItems: state.packingItems.map(item => item.id === id ? result.item : item)
       }))
@@ -41,7 +41,7 @@ export const createPackingSlice = (set: SetState, get: GetState): PackingSlice =
     const prev = get().packingItems
     set(state => ({ packingItems: state.packingItems.filter(item => item.id !== id) }))
     try {
-      await packingApi.delete(tripId, id)
+      await packingRepo.delete(tripId, id)
     } catch (err: unknown) {
       set({ packingItems: prev })
       throw new Error(getApiErrorMessage(err, 'Error deleting item'))
@@ -55,7 +55,7 @@ export const createPackingSlice = (set: SetState, get: GetState): PackingSlice =
       )
     }))
     try {
-      await packingApi.update(tripId, id, { checked })
+      await packingRepo.update(tripId, id, { checked })
     } catch {
       set(state => ({
         packingItems: state.packingItems.map(item =>

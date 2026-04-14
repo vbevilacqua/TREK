@@ -1,14 +1,167 @@
 import type { StoreApi } from 'zustand'
 import type { TripStoreState } from '../tripStore'
 import type { Assignment, Place, Day, DayNote, PackingItem, TodoItem, BudgetItem, BudgetMember, Reservation, Trip, TripFile, WebSocketEvent } from '../../types'
+import { offlineDb } from '../../db/offlineDb'
 
 type SetState = StoreApi<TripStoreState>['setState']
+type GetState = StoreApi<TripStoreState>['getState']
+
+// ── Dexie write-through ───────────────────────────────────────────────────────
+
+/**
+ * Persist remote event to IndexedDB so the data is available offline.
+ * Fire-and-forget: errors are swallowed to never block the Zustand update.
+ * Called AFTER set() so `state` already reflects the update.
+ */
+function writeToDexie(
+  type: string,
+  payload: Record<string, unknown>,
+  state: TripStoreState,
+): void {
+  ;(async () => {
+    try {
+      switch (type) {
+        // ── Places ──────────────────────────────────────────────────────────
+        case 'place:created':
+        case 'place:updated':
+          await offlineDb.places.put(payload.place as Place)
+          break
+        case 'place:deleted':
+          await offlineDb.places.delete(payload.placeId as number)
+          break
+
+        // ── Assignments (embedded in Day rows) ──────────────────────────────
+        // Read the already-updated Day from the Zustand state and persist it.
+        case 'assignment:created':
+        case 'assignment:updated': {
+          const assignment = payload.assignment as Assignment
+          await _writeDayToDb(assignment.day_id, state)
+          break
+        }
+        case 'assignment:deleted': {
+          await _writeDayToDb(payload.dayId as number, state)
+          break
+        }
+        case 'assignment:moved': {
+          const movedAssignment = payload.assignment as Assignment
+          await Promise.all([
+            _writeDayToDb(payload.oldDayId as number, state),
+            _writeDayToDb(movedAssignment.day_id, state),
+          ])
+          break
+        }
+        case 'assignment:reordered':
+          await _writeDayToDb(payload.dayId as number, state)
+          break
+
+        // ── Days ─────────────────────────────────────────────────────────────
+        case 'day:created':
+        case 'day:updated': {
+          const day = payload.day as Day
+          await _writeDayToDb(day.id, state)
+          break
+        }
+        case 'day:deleted':
+          await offlineDb.days.delete(payload.dayId as number)
+          break
+
+        // ── Day notes (embedded in Day rows) ─────────────────────────────────
+        case 'dayNote:created':
+        case 'dayNote:updated':
+        case 'dayNote:deleted':
+          await _writeDayToDb(payload.dayId as number, state)
+          break
+
+        // ── Packing ──────────────────────────────────────────────────────────
+        case 'packing:created':
+        case 'packing:updated':
+          await offlineDb.packingItems.put(payload.item as PackingItem)
+          break
+        case 'packing:deleted':
+          await offlineDb.packingItems.delete(payload.itemId as number)
+          break
+
+        // ── Todo ─────────────────────────────────────────────────────────────
+        case 'todo:created':
+        case 'todo:updated':
+          await offlineDb.todoItems.put(payload.item as TodoItem)
+          break
+        case 'todo:deleted':
+          await offlineDb.todoItems.delete(payload.itemId as number)
+          break
+
+        // ── Budget ───────────────────────────────────────────────────────────
+        case 'budget:created':
+        case 'budget:updated':
+          await offlineDb.budgetItems.put(payload.item as BudgetItem)
+          break
+        case 'budget:deleted':
+          await offlineDb.budgetItems.delete(payload.itemId as number)
+          break
+        case 'budget:members-updated':
+        case 'budget:member-paid-updated':
+        case 'budget:reordered': {
+          // Partial update — read canonical item(s) from updated Zustand state
+          if (type === 'budget:reordered') {
+            await offlineDb.budgetItems.bulkPut(state.budgetItems)
+          } else {
+            const item = state.budgetItems.find(i => i.id === (payload.itemId as number))
+            if (item) await offlineDb.budgetItems.put(item)
+          }
+          break
+        }
+
+        // ── Reservations ─────────────────────────────────────────────────────
+        case 'reservation:created':
+        case 'reservation:updated':
+          await offlineDb.reservations.put(payload.reservation as Reservation)
+          break
+        case 'reservation:deleted':
+          await offlineDb.reservations.delete(payload.reservationId as number)
+          break
+
+        // ── Trip ─────────────────────────────────────────────────────────────
+        case 'trip:updated':
+          await offlineDb.trips.put(payload.trip as Trip)
+          break
+
+        // ── Files ─────────────────────────────────────────────────────────────
+        case 'file:created':
+        case 'file:updated':
+          await offlineDb.tripFiles.put(payload.file as TripFile)
+          break
+        case 'file:deleted':
+          await offlineDb.tripFiles.delete(payload.fileId as number)
+          break
+
+        default:
+          break
+      }
+    } catch {
+      // Dexie write failures are non-fatal — online state is source of truth
+    }
+  })()
+}
+
+/** Write a Day (with its current assignments + notes from Zustand) to Dexie. */
+async function _writeDayToDb(dayId: number, state: TripStoreState): Promise<void> {
+  const day = state.days.find(d => d.id === dayId)
+  if (!day) return
+  await offlineDb.days.put({
+    ...day,
+    assignments: state.assignments[String(dayId)] ?? [],
+    notes_items: state.dayNotes[String(dayId)] ?? [],
+  })
+}
+
+// ── Zustand event reducer ─────────────────────────────────────────────────────
 
 /**
  * Applies a remote WebSocket event to the local Zustand store, keeping state in sync across collaborators.
  * Each event type maps to an immutable state update (create/update/delete) for the relevant entity.
+ * After the Zustand update, the change is also written through to IndexedDB for offline access.
  */
-export function handleRemoteEvent(set: SetState, event: WebSocketEvent): void {
+export function handleRemoteEvent(set: SetState, get: GetState, event: WebSocketEvent): void {
   const { type, ...payload } = event
 
   set(state => {
@@ -285,4 +438,7 @@ export function handleRemoteEvent(set: SetState, event: WebSocketEvent): void {
         return {}
     }
   })
+
+  // Write the change through to IndexedDB using the post-update state
+  writeToDexie(type, payload as Record<string, unknown>, get())
 }

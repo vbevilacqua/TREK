@@ -12,6 +12,7 @@ vi.mock('../../../src/api/websocket', () => ({
   addListener: vi.fn(),
   removeListener: vi.fn(),
   setRefetchCallback: vi.fn(),
+  setPreReconnectHook: vi.fn(),
 }));
 
 // Import the mocked module AFTER vi.mock

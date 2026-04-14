@@ -1,6 +1,11 @@
 import { create } from 'zustand'
 import type { StoreApi } from 'zustand'
-import { tripsApi, daysApi, placesApi, packingApi, todoApi, tagsApi, categoriesApi } from '../api/client'
+import { tripsApi, tagsApi, categoriesApi } from '../api/client'
+import { tripRepo } from '../repo/tripRepo'
+import { dayRepo } from '../repo/dayRepo'
+import { placeRepo } from '../repo/placeRepo'
+import { packingRepo } from '../repo/packingRepo'
+import { todoRepo } from '../repo/todoRepo'
 import { createPlacesSlice } from './slices/placesSlice'
 import { createAssignmentsSlice } from './slices/assignmentsSlice'
 import { createDayNotesSlice } from './slices/dayNotesSlice'
@@ -78,19 +83,19 @@ export const useTripStore = create<TripStoreState>((set, get) => ({
 
   setSelectedDay: (dayId: number | null) => set({ selectedDayId: dayId }),
 
-  handleRemoteEvent: (event: WebSocketEvent) => handleRemoteEvent(set, event),
+  handleRemoteEvent: (event: WebSocketEvent) => handleRemoteEvent(set, get, event),
 
   loadTrip: async (tripId: number | string) => {
     set({ isLoading: true, error: null })
     try {
       const [tripData, daysData, placesData, packingData, todoData, tagsData, categoriesData] = await Promise.all([
-        tripsApi.get(tripId),
-        daysApi.list(tripId),
-        placesApi.list(tripId),
-        packingApi.list(tripId),
-        todoApi.list(tripId),
-        tagsApi.list(),
-        categoriesApi.list(),
+        tripRepo.get(tripId),
+        dayRepo.list(tripId),
+        placeRepo.list(tripId),
+        packingRepo.list(tripId),
+        todoRepo.list(tripId),
+        tagsApi.list().catch(() => ({ tags: [] })),
+        categoriesApi.list().catch(() => ({ categories: [] })),
       ])
 
       const assignmentsMap: AssignmentsMap = {}
@@ -121,7 +126,7 @@ export const useTripStore = create<TripStoreState>((set, get) => ({
 
   refreshDays: async (tripId: number | string) => {
     try {
-      const daysData = await daysApi.list(tripId)
+      const daysData = await dayRepo.list(tripId)
       const assignmentsMap: AssignmentsMap = {}
       const dayNotesMap: DayNotesMap = {}
       for (const day of daysData.days) {
@@ -138,7 +143,7 @@ export const useTripStore = create<TripStoreState>((set, get) => ({
     try {
       const result = await tripsApi.update(tripId, data)
       set({ trip: result.trip })
-      const daysData = await daysApi.list(tripId)
+      const daysData = await dayRepo.list(tripId)
       const assignmentsMap: AssignmentsMap = {}
       const dayNotesMap: DayNotesMap = {}
       for (const day of daysData.days) {

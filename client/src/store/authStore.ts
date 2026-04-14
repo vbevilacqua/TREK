@@ -1,8 +1,11 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 import { authApi } from '../api/client'
 import { connect, disconnect } from '../api/websocket'
 import type { User } from '../types'
 import { getApiErrorMessage } from '../types'
+import { tripSyncManager } from '../sync/tripSyncManager'
+import { clearAll } from '../db/offlineDb'
 
 interface AuthResponse {
   user: User
@@ -55,7 +58,9 @@ interface AuthState {
 // Sequence counter to prevent stale loadUser responses from overwriting fresh auth state
 let authSequence = 0
 
-export const useAuthStore = create<AuthState>((set, get) => ({
+export const useAuthStore = create<AuthState>()(
+  persist(
+  (set, get) => ({
   user: null,
   isAuthenticated: false,
   isLoading: true,
@@ -85,6 +90,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         error: null,
       })
       connect()
+      tripSyncManager.syncAll().catch(console.error)
       return data as AuthResponse
     } catch (err: unknown) {
       const error = getApiErrorMessage(err, 'Login failed')
@@ -105,6 +111,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         error: null,
       })
       connect()
+      tripSyncManager.syncAll().catch(console.error)
       return data as AuthResponse
     } catch (err: unknown) {
       const error = getApiErrorMessage(err, 'Verification failed')
@@ -125,6 +132,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         error: null,
       })
       connect()
+      tripSyncManager.syncAll().catch(console.error)
       return data
     } catch (err: unknown) {
       const error = getApiErrorMessage(err, 'Registration failed')
@@ -142,6 +150,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       caches.delete('api-data').catch(() => {})
       caches.delete('user-uploads').catch(() => {})
     }
+    // Purge all cached trip data from IndexedDB
+    clearAll().catch(console.error)
     set({
       user: null,
       isAuthenticated: false,
@@ -255,4 +265,25 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       throw new Error(error)
     }
   },
-}))
+  }),
+  {
+    name: 'trek_auth_snapshot',
+    // Only persist the minimal user snapshot needed to avoid redirecting to
+    // login when the PWA reopens offline. The JWT remains in the httpOnly
+    // cookie and is still validated by the server on every request.
+    // maps_api_key is intentionally excluded — it's an API key that should
+    // not sit in localStorage any longer than the active session requires.
+    partialize: (state) => ({
+      isAuthenticated: state.isAuthenticated,
+      user: state.user ? {
+        id: state.user.id,
+        username: state.user.username,
+        email: state.user.email,
+        role: state.user.role,
+        avatar_url: state.user.avatar_url,
+        mfa_enabled: state.user.mfa_enabled,
+        must_change_password: state.user.must_change_password,
+      } : null,
+    }),
+  }
+))

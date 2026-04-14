@@ -892,3 +892,75 @@ describe('Copy trip with data', () => {
     expect(newNotes[0].text).toBe('Pack early!');
   });
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Bundle endpoint — GET /api/trips/:id/bundle
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('Trip bundle', () => {
+  it('BUNDLE-001 — returns all sub-collections for owned trip', async () => {
+    const { user } = createUser(testDb);
+    const trip = createTrip(testDb, user.id, { start_date: '2026-07-01', end_date: '2026-07-03' });
+
+    const res = await request(app)
+      .get(`/api/trips/${trip.id}/bundle`)
+      .set('Cookie', authCookie(user.id));
+
+    expect(res.status).toBe(200);
+    expect(res.body.trip).toBeDefined();
+    expect(res.body.trip.id).toBe(trip.id);
+    expect(Array.isArray(res.body.days)).toBe(true);
+    expect(res.body.days).toHaveLength(3);
+    expect(Array.isArray(res.body.places)).toBe(true);
+    expect(Array.isArray(res.body.packingItems)).toBe(true);
+    expect(Array.isArray(res.body.todoItems)).toBe(true);
+    expect(Array.isArray(res.body.budgetItems)).toBe(true);
+    expect(Array.isArray(res.body.reservations)).toBe(true);
+    expect(Array.isArray(res.body.files)).toBe(true);
+  });
+
+  it('BUNDLE-002 — returns 404 for trip that does not exist', async () => {
+    const { user } = createUser(testDb);
+
+    const res = await request(app)
+      .get('/api/trips/999999/bundle')
+      .set('Cookie', authCookie(user.id));
+
+    expect(res.status).toBe(404);
+  });
+
+  it('BUNDLE-003 — returns 404 when user has no access to trip', async () => {
+    const { user: owner } = createUser(testDb);
+    const { user: other } = createUser(testDb);
+    const trip = createTrip(testDb, owner.id);
+
+    const res = await request(app)
+      .get(`/api/trips/${trip.id}/bundle`)
+      .set('Cookie', authCookie(other.id));
+
+    expect(res.status).toBe(404);
+  });
+
+  it('BUNDLE-004 — members can fetch bundle', async () => {
+    const { user: owner } = createUser(testDb);
+    const { user: member } = createUser(testDb);
+    const trip = createTrip(testDb, owner.id);
+    testDb.prepare('INSERT INTO trip_members (trip_id, user_id) VALUES (?, ?)').run(trip.id, member.id);
+
+    const res = await request(app)
+      .get(`/api/trips/${trip.id}/bundle`)
+      .set('Cookie', authCookie(member.id));
+
+    expect(res.status).toBe(200);
+    expect(res.body.trip.id).toBe(trip.id);
+  });
+
+  it('BUNDLE-005 — returns 401 when unauthenticated', async () => {
+    const { user } = createUser(testDb);
+    const trip = createTrip(testDb, user.id);
+
+    const res = await request(app).get(`/api/trips/${trip.id}/bundle`);
+
+    expect(res.status).toBe(401);
+  });
+});

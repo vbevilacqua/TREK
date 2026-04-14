@@ -13,6 +13,8 @@ let shouldReconnect = false
 let refetchCallback: RefetchCallback | null = null
 let mySocketId: string | null = null
 let connecting = false
+/** Hook run before refetchCallback on reconnect. Awaited so mutations land first. */
+let preReconnectHook: (() => Promise<void>) | null = null
 
 export function getSocketId(): string | null {
   return mySocketId
@@ -20,6 +22,16 @@ export function getSocketId(): string | null {
 
 export function setRefetchCallback(fn: RefetchCallback | null): void {
   refetchCallback = fn
+}
+
+/**
+ * Register a hook that runs (and is awaited) before the refetch callback
+ * fires on WS reconnect.  Use this to flush the mutation queue so queued
+ * local writes reach the server before the app reads back canonical state.
+ * Pass null to clear.
+ */
+export function setPreReconnectHook(fn: (() => Promise<void>) | null): void {
+  preReconnectHook = fn
 }
 
 function getWsUrl(wsToken: string): string {
@@ -99,11 +111,20 @@ async function connectInternal(_isReconnect = false): Promise<void> {
         }
       })
       if (refetchCallback) {
-        activeTrips.forEach(tripId => {
-          try { refetchCallback!(tripId) } catch (err: unknown) {
-            console.error('Failed to refetch trip data on reconnect:', err)
-          }
-        })
+        const doRefetch = () => {
+          activeTrips.forEach(tripId => {
+            try { refetchCallback!(tripId) } catch (err: unknown) {
+              console.error('Failed to refetch trip data on reconnect:', err)
+            }
+          })
+        }
+        // Flush queued mutations first so local writes land before server read-back.
+        // If the hook fails, still refetch to keep the UI correct.
+        if (preReconnectHook) {
+          preReconnectHook().catch(console.error).then(doRefetch)
+        } else {
+          doRefetch()
+        }
       }
     }
   }

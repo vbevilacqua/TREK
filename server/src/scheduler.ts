@@ -230,11 +230,35 @@ function startVersionCheck(): void {
   }, { timezone: tz });
 }
 
+// Idempotency key cleanup: nightly at 3 AM — delete keys older than 24 hours
+let idempotencyCleanupTask: ScheduledTask | null = null;
+
+function startIdempotencyCleanup(): void {
+  if (idempotencyCleanupTask) { idempotencyCleanupTask.stop(); idempotencyCleanupTask = null; }
+
+  const tz = process.env.TZ || 'UTC';
+  idempotencyCleanupTask = cron.schedule('0 3 * * *', () => {
+    try {
+      const { db } = require('./db/database');
+      const cutoff = Math.floor(Date.now() / 1000) - 86400;
+      const result = db.prepare('DELETE FROM idempotency_keys WHERE created_at < ?').run(cutoff);
+      if (result.changes > 0) {
+        const { logInfo: li } = require('./services/auditLog');
+        li(`Idempotency cleanup: removed ${result.changes} expired key(s)`);
+      }
+    } catch (err: unknown) {
+      const { logError: le } = require('./services/auditLog');
+      le(`Idempotency cleanup: ${err instanceof Error ? err.message : err}`);
+    }
+  }, { timezone: tz });
+}
+
 function stop(): void {
   if (currentTask) { currentTask.stop(); currentTask = null; }
   if (demoTask) { demoTask.stop(); demoTask = null; }
   if (reminderTask) { reminderTask.stop(); reminderTask = null; }
   if (versionCheckTask) { versionCheckTask.stop(); versionCheckTask = null; }
+  if (idempotencyCleanupTask) { idempotencyCleanupTask.stop(); idempotencyCleanupTask = null; }
 }
 
-export { start, stop, startDemoReset, startTripReminders, startVersionCheck, loadSettings, saveSettings, VALID_INTERVALS };
+export { start, stop, startDemoReset, startTripReminders, startVersionCheck, startIdempotencyCleanup, loadSettings, saveSettings, VALID_INTERVALS };

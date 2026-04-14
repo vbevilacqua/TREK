@@ -1578,6 +1578,22 @@ function runMigrations(db: Database.Database): void {
     () => {
       try { db.exec('ALTER TABLE journey_contributors ADD COLUMN hide_skeletons INTEGER NOT NULL DEFAULT 0'); } catch {}
     },
+    // Migration 100: Idempotency keys for offline mutation replay
+    () => {
+      db.exec(`
+        CREATE TABLE IF NOT EXISTS idempotency_keys (
+          key         TEXT NOT NULL,
+          user_id     INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+          method      TEXT NOT NULL,
+          path        TEXT NOT NULL,
+          status_code INTEGER NOT NULL,
+          response_body TEXT NOT NULL,
+          created_at  INTEGER NOT NULL DEFAULT (strftime('%s','now')),
+          PRIMARY KEY (key, user_id)
+        );
+        CREATE INDEX IF NOT EXISTS idx_idempotency_keys_created ON idempotency_keys(created_at);
+      `);
+    },
   ];
 
   if (currentVersion < migrations.length) {

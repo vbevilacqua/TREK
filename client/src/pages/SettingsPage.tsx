@@ -11,6 +11,7 @@ import NotificationsTab from '../components/Settings/NotificationsTab'
 import IntegrationsTab from '../components/Settings/IntegrationsTab'
 import AccountTab from '../components/Settings/AccountTab'
 import AboutTab from '../components/Settings/AboutTab'
+import OfflineTab from '../components/Settings/OfflineTab'
 
 export default function SettingsPage(): React.ReactElement {
   const { t } = useTranslation()
@@ -41,6 +42,7 @@ export default function SettingsPage(): React.ReactElement {
     { id: 'map', label: t('settings.tabs.map') },
     { id: 'notifications', label: t('settings.tabs.notifications') },
     ...(hasIntegrations ? [{ id: 'integrations', label: t('settings.tabs.integrations') }] : []),
+    { id: 'offline', label: t('settings.tabs.offline', 'Offline') },
     { id: 'account', label: t('settings.tabs.account') },
     ...(appVersion ? [{ id: 'about', label: t('settings.tabs.about') }] : []),
   ]
@@ -84,6 +86,7 @@ export default function SettingsPage(): React.ReactElement {
           {activeTab === 'map' && <MapSettingsTab />}
           {activeTab === 'notifications' && <NotificationsTab />}
           {activeTab === 'integrations' && hasIntegrations && <IntegrationsTab />}
+          {activeTab === 'offline' && <OfflineTab />}
           {activeTab === 'account' && <AccountTab />}
           {activeTab === 'about' && appVersion && <AboutTab appVersion={appVersion} />}
         </div>

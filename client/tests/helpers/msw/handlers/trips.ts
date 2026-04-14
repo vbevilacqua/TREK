@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw';
-import { buildTrip, buildDay, buildUser } from '../../factories';
+import { buildTrip, buildDay, buildUser, buildPlace, buildPackingItem, buildTodoItem, buildBudgetItem, buildReservation, buildTripFile } from '../../factories';
 
 export const tripsHandlers = [
   // List all trips (active or archived)
@@ -45,6 +45,22 @@ export const tripsHandlers = [
 
   http.get('/api/trips/:id/accommodations', () => {
     return HttpResponse.json({ accommodations: [] });
+  }),
+
+  http.get('/api/trips/:id/bundle', ({ params }) => {
+    const tripId = Number(params.id);
+    const trip = buildTrip({ id: tripId });
+    const day = buildDay({ trip_id: tripId, assignments: [], notes_items: [] });
+    return HttpResponse.json({
+      trip,
+      days: [day],
+      places: [buildPlace({ trip_id: tripId })],
+      packingItems: [buildPackingItem({ trip_id: tripId })],
+      todoItems: [buildTodoItem({ trip_id: tripId })],
+      budgetItems: [buildBudgetItem({ trip_id: tripId })],
+      reservations: [buildReservation({ trip_id: tripId })],
+      files: [buildTripFile({ trip_id: tripId })],
+    });
   }),
 
   http.delete('/api/trips/:id', () => {

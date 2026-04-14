@@ -38,12 +38,24 @@ export const apiClient: AxiosInstance = axios.create({
   },
 })
 
-// Request interceptor - add socket ID
+const MUTATING_METHODS = new Set(['post', 'put', 'patch', 'delete'])
+
+// Request interceptor - add socket ID + idempotency key for mutating requests
 apiClient.interceptors.request.use(
   (config) => {
     const sid = getSocketId()
     if (sid) {
       config.headers['X-Socket-Id'] = sid
+    }
+    // Attach a per-request idempotency key to all write operations so the
+    // server can deduplicate retried requests (e.g. network blips).
+    // The mutation queue sets its own pre-generated key; skip if already set.
+    const method = (config.method ?? '').toLowerCase()
+    if (MUTATING_METHODS.has(method) && !config.headers['X-Idempotency-Key']) {
+      const key = typeof crypto !== 'undefined' && crypto.randomUUID
+        ? crypto.randomUUID()
+        : Math.random().toString(36).slice(2)
+      config.headers['X-Idempotency-Key'] = key
     }
     return config
   },
@@ -161,6 +173,7 @@ export const tripsApi = {
   addMember: (id: number | string, identifier: string) => apiClient.post(`/trips/${id}/members`, { identifier }).then(r => r.data),
   removeMember: (id: number | string, userId: number) => apiClient.delete(`/trips/${id}/members/${userId}`).then(r => r.data),
   copy: (id: number | string, data?: { title?: string }) => apiClient.post(`/trips/${id}/copy`, data || {}).then(r => r.data),
+  bundle: (id: number | string) => apiClient.get(`/trips/${id}/bundle`).then(r => r.data),
 }
 
 export const daysApi = {

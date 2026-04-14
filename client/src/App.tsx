@@ -22,6 +22,8 @@ import { TranslationProvider, useTranslation } from './i18n'
 import { authApi } from './api/client'
 import { usePermissionsStore, PermissionLevel } from './store/permissionsStore'
 import { useInAppNotificationListener } from './hooks/useInAppNotificationListener.ts'
+import { registerSyncTriggers, unregisterSyncTriggers } from './sync/syncTriggers'
+import OfflineBanner from './components/Layout/OfflineBanner'
 
 interface ProtectedRouteProps {
   children: ReactNode
@@ -93,7 +95,15 @@ export default function App() {
 
   useEffect(() => {
     if (!location.pathname.startsWith('/shared/') && !location.pathname.startsWith('/public/') && !location.pathname.startsWith('/login')) {
-      loadUser()
+      // If the persist snapshot already has an authenticated user, validate
+      // silently so the PWA shell renders immediately without a spinner.
+      const alreadyAuthenticated = useAuthStore.getState().isAuthenticated
+      if (alreadyAuthenticated) {
+        useAuthStore.setState({ isLoading: false })
+        loadUser({ silent: true })
+      } else {
+        loadUser()
+      }
     }
     authApi.getAppConfig().then(async (config: { demo_mode?: boolean; dev_mode?: boolean; is_prerelease?: boolean; has_maps_key?: boolean; version?: string; timezone?: string; require_mfa?: boolean; trip_reminders_enabled?: boolean; permissions?: Record<string, PermissionLevel> }) => {
       if (config?.demo_mode) setDemoMode(true)
@@ -138,6 +148,11 @@ export default function App() {
     }
   }, [isAuthenticated])
 
+  useEffect(() => {
+    registerSyncTriggers()
+    return () => unregisterSyncTriggers()
+  }, [])
+
   const location = useLocation()
   const isSharedPage = location.pathname.startsWith('/shared/')
 
@@ -170,6 +185,7 @@ export default function App() {
   return (
     <TranslationProvider>
       <ToastContainer />
+      <OfflineBanner />
       <Routes>
         <Route path="/" element={<RootRedirect />} />
         <Route path="/login" element={<LoginPage />} />

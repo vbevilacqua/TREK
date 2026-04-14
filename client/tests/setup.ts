@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/vitest';
+import 'fake-indexeddb/auto';
 import { cleanup } from '@testing-library/react';
 import { afterAll, afterEach, beforeAll, vi } from 'vitest';
 import { server } from './helpers/msw/server';
@@ -9,6 +10,7 @@ vi.mock('../src/api/websocket', () => ({
   disconnect: vi.fn(),
   getSocketId: vi.fn(() => null),
   setRefetchCallback: vi.fn(),
+  setPreReconnectHook: vi.fn(),
 }));
 
 // MSW lifecycle

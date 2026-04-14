@@ -14,6 +14,7 @@ vi.mock('../../../src/api/websocket', () => ({
   addListener: vi.fn(),
   removeListener: vi.fn(),
   setRefetchCallback: vi.fn(),
+  setPreReconnectHook: vi.fn(),
 }));
 
 beforeEach(() => {
