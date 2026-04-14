@@ -34,27 +34,44 @@ export { isOwner };
 
 export function generateDays(tripId: number | bigint | string, startDate: string | null, endDate: string | null, maxDays?: number, dayCount?: number) {
   const existing = db.prepare('SELECT id, day_number, date FROM days WHERE trip_id = ?').all(tripId) as { id: number; day_number: number; date: string | null }[];
+  const setDayNumber = db.prepare('UPDATE days SET day_number = ? WHERE id = ?');
+
+  // Helper: two-phase renumber to avoid UNIQUE(trip_id, day_number) collisions
+  function renumber(days: { id: number }[]) {
+    days.forEach((d, i) => setDayNumber.run(-(i + 1), d.id));
+    days.forEach((d, i) => setDayNumber.run(i + 1, d.id));
+  }
 
   if (!startDate || !endDate) {
-    const datelessExisting = existing.filter(d => !d.date).sort((a, b) => a.day_number - b.day_number);
+    // Nullify all dated days instead of deleting them — preserves assignments/notes/accommodations
     const withDates = existing.filter(d => d.date);
     if (withDates.length > 0) {
-      db.prepare(`DELETE FROM days WHERE trip_id = ? AND date IS NOT NULL`).run(tripId);
+      const nullify = db.prepare('UPDATE days SET date = NULL WHERE id = ?');
+      for (const d of withDates) nullify.run(d.id);
     }
-    const targetCount = Math.min(Math.max(dayCount ?? (datelessExisting.length || 7), 1), MAX_TRIP_DAYS);
-    const needed = targetCount - datelessExisting.length;
+    // Now all days are dateless — adjust count toward dayCount target
+    const allDays = db.prepare('SELECT id FROM days WHERE trip_id = ? ORDER BY day_number').all(tripId) as { id: number }[];
+    const targetCount = Math.min(Math.max(dayCount ?? (allDays.length || 7), 1), MAX_TRIP_DAYS);
+    const needed = targetCount - allDays.length;
     if (needed > 0) {
       const insert = db.prepare('INSERT INTO days (trip_id, day_number, date) VALUES (?, ?, NULL)');
-      for (let i = 0; i < needed; i++) insert.run(tripId, datelessExisting.length + i + 1);
+      for (let i = 0; i < needed; i++) insert.run(tripId, allDays.length + i + 1);
     } else if (needed < 0) {
-      const toRemove = datelessExisting.slice(targetCount);
+      // Only trim trailing empty days to avoid destroying content
+      const candidates = db.prepare(
+        `SELECT d.id FROM days d
+         WHERE d.trip_id = ?
+           AND NOT EXISTS (SELECT 1 FROM day_assignments da WHERE da.day_id = d.id)
+           AND NOT EXISTS (SELECT 1 FROM day_notes dn WHERE dn.day_id = d.id)
+           AND NOT EXISTS (SELECT 1 FROM day_accommodations dac WHERE dac.start_day_id = d.id OR dac.end_day_id = d.id)
+         ORDER BY d.day_number DESC
+         LIMIT ?`
+      ).all(tripId, -needed) as { id: number }[];
       const del = db.prepare('DELETE FROM days WHERE id = ?');
-      for (const d of toRemove) del.run(d.id);
+      for (const d of candidates) del.run(d.id);
     }
     const remaining = db.prepare('SELECT id FROM days WHERE trip_id = ? ORDER BY day_number').all(tripId) as { id: number }[];
-    const tmpUpd = db.prepare('UPDATE days SET day_number = ? WHERE id = ?');
-    remaining.forEach((d, i) => tmpUpd.run(-(i + 1), d.id));
-    remaining.forEach((d, i) => tmpUpd.run(i + 1, d.id));
+    renumber(remaining);
     return;
   }
 
@@ -73,45 +90,50 @@ export function generateDays(tripId: number | bigint | string, startDate: string
     targetDates.push(`${yyyy}-${mm}-${dd}`);
   }
 
-  const existingByDate = new Map<string, { id: number; day_number: number; date: string | null }>();
-  for (const d of existing) {
-    if (d.date) existingByDate.set(d.date, d);
-  }
-
-  const targetDateSet = new Set(targetDates);
-
-  const toDelete = existing.filter(d => d.date && !targetDateSet.has(d.date));
+  // Split into dated (sorted by day_number = position) and dateless (spare pool)
+  const dated = existing.filter(d => d.date).sort((a, b) => a.day_number - b.day_number);
   const dateless = existing.filter(d => !d.date).sort((a, b) => a.day_number - b.day_number);
-  const del = db.prepare('DELETE FROM days WHERE id = ?');
-  for (const d of toDelete) del.run(d.id);
 
-  // Reassign dateless days to the first unmatched target dates (preserves content)
-  const assignDate = db.prepare('UPDATE days SET date = ?, day_number = ? WHERE id = ?');
-  let datelessIdx = 0;
+  // Phase 1: stamp all existing days with negative day_numbers to free up slots
+  const allExisting = [...dated, ...dateless];
+  allExisting.forEach((d, i) => setDayNumber.run(-(i + 1), d.id));
 
-  const setTemp = db.prepare('UPDATE days SET day_number = ? WHERE id = ?');
-  const kept = existing.filter(d => d.date && targetDateSet.has(d.date));
-  for (let i = 0; i < kept.length; i++) setTemp.run(-(i + 1), kept[i].id);
-
+  const assignDay = db.prepare('UPDATE days SET date = ?, day_number = ? WHERE id = ?');
   const insert = db.prepare('INSERT INTO days (trip_id, day_number, date) VALUES (?, ?, ?)');
-  const update = db.prepare('UPDATE days SET day_number = ? WHERE id = ?');
+
+  let datelessIdx = 0;
 
   for (let i = 0; i < targetDates.length; i++) {
     const date = targetDates[i];
-    const ex = existingByDate.get(date);
-    if (ex) {
-      update.run(i + 1, ex.id);
+    if (i < dated.length) {
+      // Positional remap: existing dated day i gets new date — keeps all children
+      assignDay.run(date, i + 1, dated[i].id);
     } else if (datelessIdx < dateless.length) {
       // Reuse a dateless day — keeps its assignments, notes, etc.
-      assignDate.run(date, i + 1, dateless[datelessIdx].id);
+      assignDay.run(date, i + 1, dateless[datelessIdx].id);
       datelessIdx++;
     } else {
       insert.run(tripId, i + 1, date);
     }
   }
 
-  // Delete any remaining unused dateless days
-  for (let i = datelessIdx; i < dateless.length; i++) del.run(dateless[i].id);
+  // Overflow dated days (trip shrunk): convert to dateless instead of deleting
+  const nullify = db.prepare('UPDATE days SET date = NULL, day_number = ? WHERE id = ?');
+  for (let i = targetDates.length; i < dated.length; i++) {
+    nullify.run(targetDates.length + (i - targetDates.length) + 1, dated[i].id);
+  }
+
+  // Any remaining unused dateless days: keep as dateless, just renumber.
+  // Base must be max(targetDates.length, dated.length) to avoid colliding with
+  // positives already assigned by the main loop or the overflow loop above.
+  const maxAssigned = Math.max(targetDates.length, dated.length);
+  for (let i = datelessIdx; i < dateless.length; i++) {
+    setDayNumber.run(maxAssigned + (i - datelessIdx) + 1, dateless[i].id);
+  }
+
+  // Final renumber to compact and eliminate any gaps/negatives
+  const remaining = db.prepare('SELECT id FROM days WHERE trip_id = ? ORDER BY day_number').all(tripId) as { id: number }[];
+  renumber(remaining);
 }
 
 // ── Trip CRUD ─────────────────────────────────────────────────────────────
