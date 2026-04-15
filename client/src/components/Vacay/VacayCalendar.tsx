@@ -60,11 +60,10 @@ export default function VacayCalendar() {
       await toggleCompanyHoliday(dateStr)
       return
     }
-    if (holidays[dateStr]) return
     if (blockWeekends && isWeekend(dateStr, weekendDays)) return
     if (companyHolidaysEnabled && companyHolidaySet.has(dateStr)) return
     await toggleEntry(dateStr, selectedUserId || undefined)
-  }, [companyMode, toggleEntry, toggleCompanyHoliday, holidays, companyHolidaySet, blockWeekends, companyHolidaysEnabled, selectedUserId])
+  }, [companyMode, toggleEntry, toggleCompanyHoliday, companyHolidaySet, blockWeekends, companyHolidaysEnabled, selectedUserId])
 
   const selectedUser = users.find(u => u.id === selectedUserId)
 

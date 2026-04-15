@@ -151,7 +151,7 @@ describe('VacayCalendar', () => {
     expect(toggleEntry).toHaveBeenCalledWith('2025-01-01', 42)
   })
 
-  it('FE-COMP-VACAYCALENDAR-007: cell click blocked by public holiday', async () => {
+  it('FE-COMP-VACAYCALENDAR-007: cell click on public holiday toggles vacation entry', async () => {
     const user = userEvent.setup()
     const toggleEntry = vi.fn().mockResolvedValue(undefined)
 
@@ -168,10 +168,10 @@ describe('VacayCalendar', () => {
 
     render(<VacayCalendar />)
 
-    // Month 0, button emits '2025-01-01' which is a holiday
+    // Month 0, button emits '2025-01-01' which is a holiday — should still toggle vacation
     await user.click(screen.getByText('click-0'))
 
-    expect(toggleEntry).not.toHaveBeenCalled()
+    expect(toggleEntry).toHaveBeenCalledWith('2025-01-01', undefined)
   })
 
   it('FE-COMP-VACAYCALENDAR-008: cell click in company mode calls toggleCompanyHoliday', async () => {
