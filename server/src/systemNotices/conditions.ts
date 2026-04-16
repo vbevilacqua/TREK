@@ -30,9 +30,11 @@ function evaluateOne(condition: NoticeCondition, ctx: ConditionContext): boolean
       const userVersion = semver.valid(ctx.user.first_seen_version) ?? '0.0.0';
       const noticeVersion = semver.valid(condition.version);
       if (!noticeVersion) return false;
+      // Strip prerelease/build metadata so '3.0.0-pre.42' is treated as '3.0.0'.
+      const appVersion = semver.coerce(ctx.currentAppVersion)?.version ?? '0.0.0';
       return (
         semver.lt(userVersion, noticeVersion) &&
-        semver.gte(semver.valid(ctx.currentAppVersion) ?? '0.0.0', noticeVersion)
+        semver.gte(appVersion, noticeVersion)
       );
     }
 

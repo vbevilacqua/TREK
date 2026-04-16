@@ -40,6 +40,12 @@ describe('existingUserBeforeVersion', () => {
   it('fails when current app version < notice version', () => {
     expect(evaluate(notice, { ...baseCtx, currentAppVersion: '1.5.0' })).toBe(false);
   });
+  it('passes when current app version is a prerelease of the notice version', () => {
+    expect(evaluate(notice, { ...baseCtx, currentAppVersion: '2.0.0-pre.42' })).toBe(true);
+  });
+  it('passes when current app version is a prerelease beyond the notice version', () => {
+    expect(evaluate(notice, { ...baseCtx, currentAppVersion: '2.1.0-pre.1' })).toBe(true);
+  });
 });
 
 describe('dateWindow', () => {
