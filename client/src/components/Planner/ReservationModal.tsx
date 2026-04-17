@@ -517,34 +517,36 @@ export function ReservationModal({ isOpen, onClose, onSave, reservation, days, p
           {isEndBeforeStart && (
             <div style={{ fontSize: 11, color: '#ef4444', marginTop: -6 }}>{t('reservations.validation.endBeforeStart')}</div>
           )}
-          <div style={{ display: 'flex', gap: 8 }}>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <label style={labelStyle}>{t('reservations.status')}</label>
-              <CustomSelect
-                value={form.status}
-                onChange={value => set('status', value)}
-                options={[
-                  { value: 'pending', label: t('reservations.pending') },
-                  { value: 'confirmed', label: t('reservations.confirmed') },
-                ]}
-                size="sm"
-              />
-            </div>
-          </div>
         </>
         )}
 
-        {/* Location + Booking Code */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {/* Location (own row for non-transport, non-hotel types) */}
+        {!isTransport(form.type) && form.type !== 'hotel' && (
           <div>
             <label style={labelStyle}>{t('reservations.locationAddress')}</label>
             <input type="text" value={form.location} onChange={e => set('location', e.target.value)}
               placeholder={t('reservations.locationPlaceholder')} style={inputStyle} />
           </div>
+        )}
+
+        {/* Booking Code + Status */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label style={labelStyle}>{t('reservations.confirmationCode')}</label>
             <input type="text" value={form.confirmation_number} onChange={e => set('confirmation_number', e.target.value)}
               placeholder={t('reservations.confirmationPlaceholder')} style={inputStyle} />
+          </div>
+          <div>
+            <label style={labelStyle}>{t('reservations.status')}</label>
+            <CustomSelect
+              value={form.status}
+              onChange={value => set('status', value)}
+              options={[
+                { value: 'pending', label: t('reservations.pending') },
+                { value: 'confirmed', label: t('reservations.confirmed') },
+              ]}
+              size="sm"
+            />
           </div>
         </div>
 
@@ -631,8 +633,8 @@ export function ReservationModal({ isOpen, onClose, onSave, reservation, days, p
                 />
               </div>
             </div>
-            {/* Check-in/out times + Status */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {/* Check-in / check-in-until / check-out */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
                 <label style={labelStyle}>{t('reservations.meta.checkIn')}</label>
                 <CustomTimePicker value={form.meta_check_in_time} onChange={v => set('meta_check_in_time', v)} />
@@ -644,18 +646,6 @@ export function ReservationModal({ isOpen, onClose, onSave, reservation, days, p
               <div>
                 <label style={labelStyle}>{t('reservations.meta.checkOut')}</label>
                 <CustomTimePicker value={form.meta_check_out_time} onChange={v => set('meta_check_out_time', v)} />
-              </div>
-              <div>
-                <label style={labelStyle}>{t('reservations.status')}</label>
-                <CustomSelect
-                  value={form.status}
-                  onChange={value => set('status', value)}
-                  options={[
-                    { value: 'pending', label: t('reservations.pending') },
-                    { value: 'confirmed', label: t('reservations.confirmed') },
-                  ]}
-                  size="sm"
-                />
               </div>
             </div>
           </>

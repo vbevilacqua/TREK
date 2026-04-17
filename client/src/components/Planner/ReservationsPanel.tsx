@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import ReactDOM from 'react-dom'
 import { useTripStore } from '../../store/tripStore'
 import { useCanDo } from '../../store/permissionsStore'
@@ -382,10 +382,20 @@ interface SectionProps {
   children: React.ReactNode
   defaultOpen?: boolean
   accent: 'green' | string
+  storageKey?: string
 }
 
-function Section({ title, count, children, defaultOpen = true, accent }: SectionProps) {
-  const [open, setOpen] = useState(defaultOpen)
+function Section({ title, count, children, defaultOpen = true, accent, storageKey }: SectionProps) {
+  const [open, setOpen] = useState(() => {
+    if (!storageKey || typeof window === 'undefined') return defaultOpen
+    const stored = window.localStorage.getItem(storageKey)
+    if (stored === null) return defaultOpen
+    return stored === '1'
+  })
+  useEffect(() => {
+    if (!storageKey || typeof window === 'undefined') return
+    window.localStorage.setItem(storageKey, open ? '1' : '0')
+  }, [open, storageKey])
   return (
     <div style={{ marginBottom: 28 }}>
       <button onClick={() => setOpen(o => !o)} style={{
@@ -568,12 +578,12 @@ export default function ReservationsPanel({ tripId, reservations, days, assignme
         ) : (
           <>
             {allPending.length > 0 && (
-              <Section title={t('reservations.pending')} count={allPending.length} accent="gray">
+              <Section title={t('reservations.pending')} count={allPending.length} accent="gray" storageKey={`trek:bookings-pending-open:${tripId}`}>
                 {allPending.map(r => <ReservationCard key={r.id} r={r} tripId={tripId} onEdit={onEdit} onDelete={onDelete} files={files} onNavigateToFiles={onNavigateToFiles} assignmentLookup={assignmentLookup} canEdit={canEdit} />)}
               </Section>
             )}
             {allConfirmed.length > 0 && (
-              <Section title={t('reservations.confirmed')} count={allConfirmed.length} accent="green">
+              <Section title={t('reservations.confirmed')} count={allConfirmed.length} accent="green" storageKey={`trek:bookings-confirmed-open:${tripId}`}>
                 {allConfirmed.map(r => <ReservationCard key={r.id} r={r} tripId={tripId} onEdit={onEdit} onDelete={onDelete} files={files} onNavigateToFiles={onNavigateToFiles} assignmentLookup={assignmentLookup} canEdit={canEdit} />)}
               </Section>
             )}
