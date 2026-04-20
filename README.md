@@ -1,121 +1,160 @@
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="client/public/logo-light.svg" />
-    <source media="(prefers-color-scheme: light)" srcset="client/public/logo-dark.svg" />
-    <img src="client/public/logo-light.svg" alt="TREK" height="60" />
-  </picture>
-  <br />
-  <em>Your Trips. Your Plan.</em>
-</p>
+<div align="center">
 
-<p align="center">
-  <a href="https://discord.gg/NhZBDSd4qW"><img src="https://img.shields.io/badge/Discord-Join%20Community-5865F2?logo=discord&logoColor=white" alt="Discord" /></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-AGPL_v3-blue.svg" alt="License: AGPL v3" /></a>
-  <a href="https://hub.docker.com/r/mauriceboe/trek"><img src="https://img.shields.io/docker/pulls/mauriceboe/trek" alt="Docker Pulls" /></a>
-  <a href="https://github.com/mauriceboe/TREK"><img src="https://img.shields.io/github/stars/mauriceboe/TREK" alt="GitHub Stars" /></a>
-  <a href="https://github.com/mauriceboe/TREK/commits"><img src="https://img.shields.io/github/last-commit/mauriceboe/TREK" alt="Last Commit" /></a>
-</p>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/logo-trek-light.gif" />
+  <source media="(prefers-color-scheme: light)" srcset="docs/logo-trek-dark.gif" />
+  <img src="docs/logo-trek-dark.gif" alt="TREK" height="96" />
+</picture>
 
-<p align="center">
-  A self-hosted, real-time collaborative travel planner with interactive maps, budgets, packing lists, and more.
-  <br />
-  <strong><a href="https://demo-nomad.pakulat.org">Live Demo</a></strong> — Try TREK without installing. Resets hourly.
-</p>
+### Your trips. Your plan. Your server.
 
-![TREK Screenshot](docs/screenshot.png)
-![TREK Screenshot 2](docs/screenshot-2.png)
+A self-hosted, real-time collaborative travel planner — with maps, budgets, packing lists, a journal, and AI built in.
+
+<br />
+
+<a href="https://demo-nomad.pakulat.org"><img alt="Live Demo" src="https://img.shields.io/badge/Live_Demo-try_it_now-111827?style=for-the-badge" /></a>
+&nbsp;
+<a href="https://hub.docker.com/r/mauriceboe/trek"><img alt="Docker" src="https://img.shields.io/badge/Docker-ready-2496ED?style=for-the-badge&logo=docker&logoColor=white" /></a>
+&nbsp;
+<a href="https://discord.gg/NhZBDSd4qW"><img alt="Discord" src="https://img.shields.io/badge/Discord-community-5865F2?style=for-the-badge&logo=discord&logoColor=white" /></a>
+&nbsp;
+<a href="https://kanban.pakulat.org/shared/I4wxF6inOOMB0C6hH6kQm3efyNxFjwyI"><img alt="Roadmap" src="https://img.shields.io/badge/Roadmap-board-0EA5E9?style=for-the-badge&logo=trello&logoColor=white" /></a>
+<br />
+<a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-AGPL_v3-6B7280?style=flat-square" /></a>
+<a href="https://github.com/mauriceboe/TREK/releases"><img alt="Latest Release" src="https://img.shields.io/github/v/release/mauriceboe/TREK?include_prereleases&style=flat-square&color=6B7280" /></a>
+<a href="https://hub.docker.com/r/mauriceboe/trek"><img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/mauriceboe/trek?style=flat-square&color=6B7280" /></a>
+<a href="https://github.com/mauriceboe/TREK"><img alt="Stars" src="https://img.shields.io/github/stars/mauriceboe/TREK?style=flat-square&color=6B7280" /></a>
+
+</div>
+
+---
+
+<div align="center">
+
+<img src=".github/assets/TREK1.gif" alt="TREK — 60-second tour" width="100%" />
+
+</div>
+
+<br />
+
+<div align="center">
+  <a href="docs/screenshots/dashboard.png"><img src="docs/screenshots/dashboard.png" alt="Dashboard" width="49%" /></a>
+  <a href="docs/screenshots/trip-planner.png"><img src="docs/screenshots/trip-planner.png" alt="Trip planner with 3D map" width="49%" /></a>
+  <a href="docs/screenshots/journey.png"><img src="docs/screenshots/journey.png" alt="Journey journal" width="49%" /></a>
+  <a href="docs/screenshots/budget.png"><img src="docs/screenshots/budget.png" alt="Budget tracker" width="49%" /></a>
+  <a href="docs/screenshots/atlas.png"><img src="docs/screenshots/atlas.png" alt="Atlas · visited countries" width="49%" /></a>
+  <a href="docs/screenshots/vacay.png"><img src="docs/screenshots/vacay.png" alt="Vacay planner" width="49%" /></a>
+  <a href="docs/screenshots/trip-iceland.png"><img src="docs/screenshots/trip-iceland.png" alt="Iceland Ring Road" width="49%" /></a>
+  <a href="docs/screenshots/admin.png"><img src="docs/screenshots/admin.png" alt="Admin panel" width="49%" /></a>
+</div>
+
+---
+
+## What you get
+
+<picture>
+  <source media="(max-width: 700px)" srcset="docs/tiles/grid-mobile.svg" />
+  <img src="docs/tiles/grid-desktop.svg" alt="TREK feature tiles" width="100%" />
+</picture>
 
 <details>
-<summary>More Screenshots</summary>
+<summary><b>See all features</b></summary>
 
-| | |
-|---|---|
-| ![Plan Detail](docs/screenshot-plan-detail.png) | ![Bookings](docs/screenshot-bookings.png) |
-| ![Budget](docs/screenshot-budget.png) | ![Packing List](docs/screenshot-packing.png) |
-| ![Collab](docs/screenshot-collab.png) | |
+<table>
+<tr>
+<td width="50%" valign="top">
+
+#### 🧭 Trip planning
+
+- **Drag & drop planner** — organise places into day plans with reordering and cross-day moves
+- **Interactive map** — Leaflet or Mapbox GL with 3D buildings, terrain, photo markers, clustering, route visualization
+- **Place search** — Google Places (photos, ratings, hours) or OpenStreetMap (free, no API key)
+- **Day notes** — timestamped, icon-tagged notes with drag-and-drop reordering
+- **Route optimisation** — auto-sort places and export to Google Maps
+- **Weather forecasts** — 16-day via Open-Meteo (no key) + historical climate fallback
+- **Category filter** — show only matching pins on the map
+
+</td>
+<td width="50%" valign="top">
+
+#### 🧳 Travel management
+
+- **Reservations** — flights, accommodations, restaurants with status, confirmation numbers, files
+- **Budget tracking** — category-based expenses with pie chart, per-person / per-day splits, multi-currency
+- **Packing lists** — categories, templates, user assignment, progress tracking
+- **Bag tracking** — optional weight tracking with iOS-style distribution
+- **Document manager** — attach docs, tickets, PDFs to trips / places / reservations (≤ 50 MB each)
+- **PDF export** — full trip plan as PDF with cover page, images, notes
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+#### 👥 Collaboration
+
+- **Real-time sync** — WebSocket. Changes appear instantly across all connected users
+- **Multi-user trips** — invite members with role-based access
+- **Invite links** — one-time or reusable links with expiry
+- **SSO (OIDC)** — Google, Apple, Authentik, Keycloak, or any OIDC provider
+- **2FA** — TOTP + backup codes
+- **Collab suite** — group chat, shared notes, polls, day check-ins
+
+</td>
+<td width="50%" valign="top">
+
+#### 📱 Mobile & PWA
+
+- **Installable** — iOS and Android, straight from the browser, no App Store needed
+- **Offline support** — Service Worker caches tiles, API, uploads via Workbox
+- **Native feel** — fullscreen standalone, themed status bar, splash screen
+- **Touch optimised** — mobile-specific layouts with safe-area handling
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+#### 🧩 Addons (admin-toggleable)
+
+- **Vacay** — personal vacation planner with calendar, 100+ country holidays, carry-over tracking
+- **Atlas** — world map of visited countries, bucket list, travel stats, streak tracking, liquid-glass UI
+- **Collab** — chat, notes, polls, day-by-day attendance
+- **Journey** — magazine-style travel journal with entries, photos, maps, moods
+- **Dashboard widgets** — currency converter and timezone clocks
+
+</td>
+<td width="50%" valign="top">
+
+#### 🤖 AI / MCP
+
+- **Built-in MCP server** — OAuth 2.1 authenticated. 80+ tools, 27 resources
+- **Granular scopes** — 24 OAuth scopes across 13 permission groups
+- **Full automation** — AI can create trips, plan days, build packing lists, manage budgets, mark countries visited
+- **Pre-built prompts** — `trip-summary`, `packing-list`, `budget-overview`
+- **Addon-aware** — exposes Atlas, Collab, Vacay when those addons are on
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top">
+
+#### ⚙️ Admin & customisation
+
+- **Dashboard views** — card grid or compact list · **Dark mode** — full theme with matching status bar
+- **14 languages** — EN, DE, ES, FR, IT, NL, HU, RU, ZH, ZH-TW, PL, CS, AR (RTL), BR, ID
+- **Admin panel** — users, invites, packing templates, categories, addons, API keys, backups, GitHub history
+- **Auto-backups** — scheduled with configurable retention · **Units** — °C/°F, 12h/24h, map tile sources, default coordinates
+
+</td>
+</tr>
+</table>
 
 </details>
 
-## Features
+<br />
 
-### Trip Planning
-- **Drag & Drop Planner** — Organize places into day plans with reordering and cross-day moves
-- **Interactive Map** — Leaflet map with photo markers, clustering, route visualization, and customizable tile sources
-- **Place Search** — Search via Google Places (with photos, ratings, opening hours) or OpenStreetMap (free, no API key needed)
-- **Day Notes** — Add timestamped, icon-tagged notes to individual days with drag & drop reordering
-- **Route Optimization** — Auto-optimize place order and export to Google Maps
-- **Weather Forecasts** — 16-day forecasts via Open-Meteo (no API key needed) with historical climate averages as fallback
-- **Map Category Filter** — Filter places by category and see only matching pins on the map
-
-### Travel Management
-- **Reservations & Bookings** — Track flights, accommodations, restaurants with status, confirmation numbers, and file attachments
-- **Budget Tracking** — Category-based expenses with pie chart, per-person/per-day splitting, and multi-currency support
-- **Packing Lists** — Category-based checklists with user assignment, packing templates, and progress tracking
-- **Packing Templates** — Create reusable packing templates in the admin panel with categories and items, apply to any trip
-- **Bag Tracking** — Optional weight tracking and bag assignment for packing items with iOS-style weight distribution (admin-toggleable)
-- **Document Manager** — Attach documents, tickets, and PDFs to trips, places, or reservations (up to 50 MB per file)
-- **PDF Export** — Export complete trip plans as PDF with cover page, images, notes, and TREK branding
-
-### Mobile & PWA
-- **Progressive Web App** — Install on iOS and Android directly from the browser, no App Store needed
-- **Offline Support** — Service Worker caches map tiles, API data, uploads, and static assets via Workbox
-- **Native App Feel** — Fullscreen standalone mode, custom app icon, themed status bar, and splash screen
-- **Touch Optimized** — Responsive design with mobile-specific layouts, touch-friendly controls, and safe area handling
-
-### Collaboration
-- **Real-Time Sync** — Plan together via WebSocket — changes appear instantly across all connected users
-- **Multi-User** — Invite members to collaborate on shared trips with role-based access
-- **Invite Links** — Create one-time registration links with configurable max uses and expiry for easy onboarding
-- **Single Sign-On (OIDC)** — Login with Google, Apple, Authentik, Keycloak, or any OIDC provider
-- **Two-Factor Authentication (MFA)** — TOTP-based 2FA with QR code setup, works with Google Authenticator, Authy, etc.
-- **Collab** — Chat with your group, share notes, create polls, and track who's signed up for each day's activities
-
-### Addons (modular, admin-toggleable)
-- **Vacay** — Personal vacation day planner with calendar view, public holidays (100+ countries), company holidays, user fusion with live sync, and carry-over tracking
-- **Atlas** — Interactive world map with visited countries, bucket list with planned travel dates, travel stats, continent breakdown, streak tracking, and liquid glass UI effects
-- **Collab** — Chat with your group, share notes, create polls, and track who's signed up for each day's activities
-- **Dashboard Widgets** — Currency converter and timezone clock, toggleable per user
-
-### AI / MCP Integration
-- **MCP Server** — Built-in [Model Context Protocol](MCP.md) server with OAuth 2.1 authentication exposes 80+ tools and 27 resources so AI assistants (Claude, Cursor, etc.) can read and modify your trips
-- **Granular Scopes** — 24 OAuth scopes across 13 permission groups let you control exactly what data your AI client can access
-- **Full Trip Automation** — AI can create trips, plan itineraries, build packing lists, manage budgets, send collab messages, mark countries visited, and more in a single conversation
-- **Prompts** — Pre-built `trip-summary`, `packing-list`, and `budget-overview` prompts give AI clients instant structured context
-- **Addon-Aware** — Atlas, Collab, and Vacay features are exposed automatically when those addons are enabled
-
-### Customization & Admin
-- **Dashboard Views** — Toggle between card grid and compact list view on the My Trips page
-- **Dark Mode** — Full light and dark theme with dynamic status bar color matching
-- **Multilingual** — English, German, Spanish, French, Russian, Chinese (Simplified), Dutch, Indonesian, Arabic (with RTL support)
-- **Admin Panel** — User management, invite links, packing templates, global categories, addon management, API keys, backups, and GitHub release history
-- **Auto-Backups** — Scheduled backups with configurable interval and retention
-- **Customizable** — Temperature units, time format (12h/24h), map tile sources, default coordinates
-
-## Tech Stack
-
-- **Backend**: Node.js 22 + Express + SQLite (`better-sqlite3`)
-- **Frontend**: React 18 + Vite + Tailwind CSS
-- **PWA**: vite-plugin-pwa + Workbox
-- **Real-Time**: WebSocket (`ws`)
-- **State**: Zustand
-- **Auth**: JWT + OAuth 2.1 + OIDC + TOTP (MFA)
-- **Maps**: Leaflet + react-leaflet-cluster + Google Places API (optional)
-- **Weather**: Open-Meteo API (free, no key required)
-- **Icons**: lucide-react
-
-## Helm (Kubernetes)
-
-A hosted Helm repository is available:
-
-```sh
-helm repo add trek https://mauriceboe.github.io/TREK
-helm repo update
-helm install trek trek/trek
-```
-
-See [`charts/README.md`](charts/README.md) for configuration options.
-
-## Quick Start
+## Get started in 30 seconds
 
 ```bash
 ENCRYPTION_KEY=$(openssl rand -hex 32) docker run -d -p 3000:3000 \
@@ -123,19 +162,40 @@ ENCRYPTION_KEY=$(openssl rand -hex 32) docker run -d -p 3000:3000 \
   -v ./data:/app/data -v ./uploads:/app/uploads mauriceboe/trek
 ```
 
-The app runs on port `3000`. The first user to register becomes the admin.
+Open `http://localhost:3000`. The first user to register becomes admin.
 
-### Install as App (PWA)
+<div align="center">
 
-TREK works as a Progressive Web App — no App Store needed:
+&nbsp;&nbsp;·&nbsp;&nbsp;<a href="#docker-compose-production">Docker Compose</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="#helm-kubernetes">Helm / Kubernetes</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="#install-as-app-pwa">Install as PWA</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="#reverse-proxy">Reverse Proxy</a>&nbsp;&nbsp;·&nbsp;&nbsp;
 
-1. Open your TREK instance in the browser (HTTPS required)
-2. **iOS**: Share button → "Add to Home Screen"
-3. **Android**: Menu → "Install app" or "Add to Home Screen"
-4. TREK launches fullscreen with its own icon, just like a native app
+</div>
+
+<br />
+
+## Tech stack
+
+<div align="center">
+
+![Node.js](https://img.shields.io/badge/Node.js_22-339933?style=flat-square&logo=node.js&logoColor=white)
+![Express](https://img.shields.io/badge/Express-000000?style=flat-square&logo=express&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-003B57?style=flat-square&logo=sqlite&logoColor=white)
+![React](https://img.shields.io/badge/React_18-61DAFB?style=flat-square&logo=react&logoColor=black)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Tailwind](https://img.shields.io/badge/Tailwind-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
+![Leaflet](https://img.shields.io/badge/Leaflet-199900?style=flat-square&logo=leaflet&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
+
+</div>
+
+Real-time sync via WebSocket (`ws`). State with Zustand. Auth via JWT + OAuth 2.1 + OIDC + TOTP MFA. Weather via Open-Meteo (no key required). Maps with Leaflet and Mapbox GL.
+
+<br />
+
+<h2 id="docker-compose-production">Docker Compose (production)</h2>
 
 <details>
-<summary>Docker Compose (recommended for production)</summary>
+<summary>Full compose example with secure defaults</summary>
 
 ```yaml
 services:
@@ -158,30 +218,19 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - ENCRYPTION_KEY=${ENCRYPTION_KEY:-} # Recommended. Generate with: openssl rand -hex 32. If unset, falls back to data/.jwt_secret (existing installs) or auto-generates a key (fresh installs).
-      - TZ=${TZ:-UTC} # Timezone for logs, reminders and scheduled tasks (e.g. Europe/Berlin)
-      - LOG_LEVEL=${LOG_LEVEL:-info} # info = concise user actions; debug = verbose admin-level details
-      # - DEFAULT_LANGUAGE=en # Default language on the login page for users with no saved preference. Browser/OS language is auto-detected first; this is the fallback. Supported: de, en, es, fr, hu, nl, br, cs, pl, ru, zh, zh-TW, it, ar
-      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-} # Comma-separated origins for CORS and email notification links
-      # - FORCE_HTTPS=true # Optional. Enables HTTPS redirect, HSTS, CSP upgrade-insecure-requests, and secure cookies behind a TLS proxy
-      # - COOKIE_SECURE=false # Escape hatch: force session cookies over plain HTTP even in production. Not recommended.
-      # - TRUST_PROXY=1 # Trusted proxy count for X-Forwarded-For / X-Forwarded-Proto. Required for FORCE_HTTPS to work.
-      # - ALLOW_INTERNAL_NETWORK=true # Uncomment if Immich or other services are on your local network (RFC-1918 IPs)
-      - APP_URL=${APP_URL:-} # Base URL of this instance — required when OIDC is enabled; must match the redirect URI registered with your IdP; Also used as the base URL for email notifications and other external links
-      # - OIDC_ISSUER=https://auth.example.com # OpenID Connect provider URL
-      # - OIDC_CLIENT_ID=trek # OpenID Connect client ID
-      # - OIDC_CLIENT_SECRET=supersecret # OpenID Connect client secret
-      # - OIDC_DISPLAY_NAME=SSO # Label shown on the SSO login button
-      # - OIDC_ONLY=false # Set to true to force SSO-only login (disables password login and registration). Equivalent to toggling those off in Admin > Settings, but takes priority over any DB setting and cannot be changed at runtime.
-      # - OIDC_ADMIN_CLAIM=groups # OIDC claim used to identify admin users
-      # - OIDC_ADMIN_VALUE=app-trek-admins # Value of the OIDC claim that grants admin role
-      # - OIDC_SCOPE=openid email profile # Fully overrides the default. Add extra scopes as needed (e.g. add groups if using OIDC_ADMIN_CLAIM)
-      # - OIDC_DISCOVERY_URL= # Override the OIDC discovery endpoint for providers with non-standard paths (e.g. Authentik)
-      # - DEMO_MODE=false # Enable demo mode (resets data hourly)
-      # - ADMIN_EMAIL=admin@trek.local # Initial admin e-mail — only used on first boot when no users exist
-      # - ADMIN_PASSWORD=changeme      # Initial admin password — only used on first boot when no users exist
-      # - MCP_RATE_LIMIT=300 # Max MCP API requests per user per minute (default: 300)
-      # - MCP_MAX_SESSION_PER_USER=20 # Max concurrent MCP sessions per user (default: 20)
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY:-}   # generate with: openssl rand -hex 32
+      - TZ=${TZ:-UTC}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-}
+      - APP_URL=${APP_URL:-}                 # required for OIDC + email links
+      # - FORCE_HTTPS=true                   # behind a TLS-terminating proxy
+      # - TRUST_PROXY=1
+      # - OIDC_ISSUER=https://auth.example.com
+      # - OIDC_CLIENT_ID=trek
+      # - OIDC_CLIENT_SECRET=supersecret
+      # - OIDC_DISPLAY_NAME=SSO
+      # - OIDC_ADMIN_CLAIM=groups
+      # - OIDC_ADMIN_VALUE=app-trek-admins
     volumes:
       - ./data:/app/data
       - ./uploads:/app/uploads
@@ -194,29 +243,49 @@ services:
       start_period: 15s
 ```
 
-This example is aimed at reverse-proxy deployments where nginx, Caddy, Traefik, or a similar proxy terminates TLS in front of TREK. The three HTTPS-related variables work together:
-
-- **`FORCE_HTTPS`** is 100% optional. When set to `true` it does four things: adds an HTTP-to-HTTPS 301 redirect, sends an HSTS header (`max-age=31536000`), adds the CSP `upgrade-insecure-requests` directive, and forces the session cookie `secure` flag on. It only makes sense behind a TLS-terminating proxy.
-- **`TRUST_PROXY`** tells Express how many proxies sit in front of TREK so it can read the real client IP from `X-Forwarded-For` and the protocol from `X-Forwarded-Proto`. Without it, `FORCE_HTTPS` redirects will loop because Express never sees the request as secure. In production (`NODE_ENV=production`) this defaults to `1` automatically; in development it is off unless explicitly set.
-- **`COOKIE_SECURE`** is normally auto-derived — the session cookie is marked `secure` whenever `NODE_ENV=production` or `FORCE_HTTPS=true`. Setting `COOKIE_SECURE=false` is an escape hatch that disables the `secure` flag even in production (e.g. testing over plain HTTP on a LAN). Do not disable it in real deployments.
-
-If you access TREK directly on `http://<host>:3000` with no reverse proxy, leave `FORCE_HTTPS` unset (or remove it) and remove `TRUST_PROXY` to avoid redirect loops to a non-existent HTTPS endpoint.
+Then:
 
 ```bash
 docker compose up -d
 ```
 
+**HTTPS notes:** `FORCE_HTTPS=true` is optional — it adds a 301 redirect, HSTS, CSP upgrade-insecure-requests, and forces the `secure` cookie flag. Only use it behind a TLS-terminating reverse proxy. `TRUST_PROXY=1` tells Express how many proxies sit in front so real client IPs and `X-Forwarded-Proto` work.
+
 </details>
 
-### Updating
+<br />
 
-**Docker Compose** (recommended):
+<h2 id="helm-kubernetes">Helm (Kubernetes)</h2>
+
+```bash
+helm repo add trek https://mauriceboe.github.io/TREK
+helm repo update
+helm install trek trek/trek
+```
+
+See [`charts/README.md`](https://github.com/mauriceboe/TREK/blob/main/charts/README.md) for values.
+
+<h2 id="install-as-app-pwa">Install as App (PWA)</h2>
+
+TREK works as a Progressive Web App — no App Store needed.
+
+1. Open TREK in the browser (HTTPS required)
+2. **iOS**: Share ▸ *Add to Home Screen*
+3. **Android**: Menu ▸ *Install app* (or *Add to Home Screen*)
+
+TREK then launches fullscreen with its own icon, just like a native app.
+
+<br />
+
+## Updating
+
+**Docker Compose:**
 
 ```bash
 docker compose pull && docker compose up -d
 ```
 
-**Docker Run** — use the same volume paths from your original `docker run` command:
+**Docker run** — reuse the original volume paths:
 
 ```bash
 docker pull mauriceboe/trek
@@ -224,27 +293,23 @@ docker rm -f trek
 docker run -d --name trek -p 3000:3000 -v ./data:/app/data -v ./uploads:/app/uploads --restart unless-stopped mauriceboe/trek
 ```
 
-> **Tip:** Not sure which paths you used? Run `docker inspect trek --format '{{json .Mounts}}'` before removing the container.
+> Not sure which paths you used? `docker inspect trek --format '{{json .Mounts}}'` before removing the container.
 
-Your data is persisted in the mounted `data` and `uploads` volumes — updates never touch your existing data.
+Your data stays in the mounted `data` and `uploads` volumes — updates never touch it.
 
-### Rotating the Encryption Key
+<h3>Rotating the Encryption Key</h3>
 
-If you need to rotate `ENCRYPTION_KEY` (e.g. you are upgrading from a version that derived encryption from `JWT_SECRET`), use the migration script to re-encrypt all stored secrets under the new key without starting the app:
+If you need to rotate `ENCRYPTION_KEY` (e.g. upgrading from a version that derived encryption from `JWT_SECRET`):
 
 ```bash
 docker exec -it trek node --import tsx scripts/migrate-encryption.ts
 ```
 
-The script will prompt for your old and new keys interactively (input is not echoed). It creates a timestamped database backup before making any changes and exits with a non-zero code if anything fails.
+The script creates a timestamped DB backup before making changes and prompts for old + new keys (input is not echoed).
 
-**Upgrading from a previous version?** Your old JWT secret is in `./data/.jwt_secret`. Use its contents as the "old key" and your new `ENCRYPTION_KEY` value as the "new key".
+<h2 id="reverse-proxy">Reverse Proxy</h2>
 
-### Reverse Proxy (recommended)
-
-For production, put TREK behind a reverse proxy with HTTPS (e.g. Nginx, Caddy, Traefik).
-
-> **Important:** TREK uses WebSockets for real-time sync. Your reverse proxy must support WebSocket upgrades on the `/ws` path.
+For production, put TREK behind a TLS-terminating reverse proxy. TREK uses WebSockets for real-time sync, so the proxy **must** support WebSocket upgrades on `/ws`.
 
 <details>
 <summary>Nginx</summary>
@@ -260,8 +325,19 @@ server {
     listen 443 ssl http2;
     server_name trek.yourdomain.com;
 
-    ssl_certificate /path/to/fullchain.pem;
-    ssl_certificate_key /path/to/privkey.pem;
+    ssl_certificate     /etc/ssl/fullchain.pem;
+    ssl_certificate_key /etc/ssl/privkey.pem;
+
+    client_max_body_size 50m;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
 
     location /ws {
         proxy_pass http://localhost:3000;
@@ -269,21 +345,6 @@ server {
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
         proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_read_timeout 86400;
-        # File uploads are capped at 50 MB; backup restore ZIPs can include the full
-        # uploads directory and may exceed that — raise this value if restores fail.
-        client_max_body_size 500m;
-    }
-
-    location / {
-        proxy_pass http://localhost:3000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
     }
 }
 ```
@@ -293,17 +354,24 @@ server {
 <details>
 <summary>Caddy</summary>
 
-Caddy handles WebSocket upgrades automatically:
-
-```
+```caddy
 trek.yourdomain.com {
     reverse_proxy localhost:3000
 }
 ```
 
+Caddy handles TLS and WebSockets automatically.
+
 </details>
 
-## Environment Variables
+<br />
+
+## Environment variables
+
+<details>
+<summary><b>Full reference</b></summary>
+
+<br />
 
 | Variable | Description | Default |
 |----------|-------------|---------|
@@ -313,58 +381,46 @@ trek.yourdomain.com {
 | `ENCRYPTION_KEY` | At-rest encryption key for stored secrets (API keys, MFA, SMTP, OIDC). Recommended: generate with `openssl rand -hex 32`. If unset, falls back to `data/.jwt_secret` (existing installs) or auto-generates a key (fresh installs). | Auto |
 | `TZ` | Timezone for logs, reminders and cron jobs (e.g. `Europe/Berlin`) | `UTC` |
 | `LOG_LEVEL` | `info` = concise user actions, `debug` = verbose details | `info` |
-| `DEFAULT_LANGUAGE` | Default language shown on the login page for users with no saved preference. Browser/OS language is auto-detected first; this is the fallback when no match is found. Supported values: `de`, `en`, `es`, `fr`, `hu`, `nl`, `br`, `cs`, `pl`, `ru`, `zh`, `zh-TW`, `it`, `ar` | `en` |
+| `DEFAULT_LANGUAGE` | Default language on the login page for users with no saved preference. Browser/OS language is auto-detected first; this is the fallback. Supported: `de`, `en`, `es`, `fr`, `hu`, `nl`, `br`, `cs`, `pl`, `ru`, `zh`, `zh-TW`, `it`, `ar` | `en` |
 | `ALLOWED_ORIGINS` | Comma-separated origins for CORS and email links | same-origin |
-| `FORCE_HTTPS` | Optional. When `true`: 301-redirects HTTP to HTTPS, sends HSTS (`max-age=31536000`), adds CSP `upgrade-insecure-requests`, and forces the session cookie `secure` flag. Only useful behind a TLS-terminating reverse proxy. Requires `TRUST_PROXY` to be set so Express can detect the forwarded protocol. | `false` |
-| `COOKIE_SECURE` | Controls the `secure` flag on the `trek_session` cookie. Auto-derived: secure is on when `NODE_ENV=production` **or** `FORCE_HTTPS=true`. Set to `false` as an escape hatch to allow session cookies over plain HTTP (e.g. LAN testing without TLS). **Not recommended to disable in production.** | auto (`true` in production) |
-| `TRUST_PROXY` | Number of trusted reverse proxies. Tells Express to read client IP from `X-Forwarded-For` and protocol from `X-Forwarded-Proto`. Activates automatically in production (defaults to `1`); off in development unless explicitly set. Must be set for `FORCE_HTTPS` redirects to work correctly. | `1` (when active) |
-| `ALLOW_INTERNAL_NETWORK` | Allow outbound requests to private/RFC-1918 IP addresses. Set to `true` if Immich or other integrated services are hosted on your local network. Loopback (`127.x`) and link-local/metadata addresses (`169.254.x`) are always blocked regardless of this setting. | `false` |
-| `APP_URL` | Public base URL of this instance (e.g. `https://trek.example.com`). Required when OIDC is enabled — must match the redirect URI registered with your IdP. Also used as the base URL for external links in email notifications. | — |
+| `FORCE_HTTPS` | Optional. When `true`: 301-redirects HTTP to HTTPS, sends HSTS, adds CSP `upgrade-insecure-requests`, forces the session cookie `secure` flag. Useful behind a TLS-terminating reverse proxy. Requires `TRUST_PROXY`. | `false` |
+| `COOKIE_SECURE` | Controls the `secure` flag on the `trek_session` cookie. Auto-derived: on when `NODE_ENV=production` or `FORCE_HTTPS=true`. Escape hatch: set `false` to allow session cookies over plain HTTP. Not recommended in production. | auto |
+| `TRUST_PROXY` | Number of trusted reverse proxies. Tells Express to read client IP from `X-Forwarded-For` and protocol from `X-Forwarded-Proto`. Defaults to `1` in production; off in dev unless set. | `1` |
+| `ALLOW_INTERNAL_NETWORK` | Allow outbound requests to private/RFC-1918 IPs (e.g. Immich on your LAN). Loopback and link-local addresses remain blocked. | `false` |
+| `APP_URL` | Public base URL of this instance (e.g. `https://trek.example.com`). Required when OIDC is enabled; used as base for email notification links. | — |
 | **OIDC / SSO** | | |
 | `OIDC_ISSUER` | OpenID Connect provider URL | — |
 | `OIDC_CLIENT_ID` | OIDC client ID | — |
 | `OIDC_CLIENT_SECRET` | OIDC client secret | — |
 | `OIDC_DISPLAY_NAME` | Label shown on the SSO login button | `SSO` |
-| `OIDC_ONLY` | Force SSO-only mode: disables password login and password registration, regardless of the granular toggles in Admin > Settings. The first SSO login becomes admin. Use when you want this enforced at the infrastructure level and not overridable via the UI. | `false` |
+| `OIDC_ONLY` | Force SSO-only mode: disables password login + registration, regardless of Admin > Settings. The first SSO login becomes admin. | `false` |
 | `OIDC_ADMIN_CLAIM` | OIDC claim used to identify admin users | — |
 | `OIDC_ADMIN_VALUE` | Value of the OIDC claim that grants admin role | — |
-| `OIDC_SCOPE` | Space-separated OIDC scopes to request. **Fully replaces** the default — always include `openid email profile` plus any extra scopes you need (e.g. add `groups` when using `OIDC_ADMIN_CLAIM`) | `openid email profile` |
-| `OIDC_DISCOVERY_URL` | Override the auto-constructed OIDC discovery endpoint. Useful for providers that expose it at a non-standard path (e.g. Authentik: `https://auth.example.com/application/o/trek/.well-known/openid-configuration`) | — |
-| **Initial Setup** | | |
-| `ADMIN_EMAIL` | Email for the first admin account created on initial boot. Must be set together with `ADMIN_PASSWORD`. If either is omitted a random password is generated and printed to the server log. Has no effect once any user exists. | `admin@trek.local` |
-| `ADMIN_PASSWORD` | Password for the first admin account created on initial boot. Must be set together with `ADMIN_EMAIL`. | random |
+| `OIDC_SCOPE` | Space-separated OIDC scopes. **Fully replaces** the default — always include `openid email profile`. | `openid email profile` |
+| `OIDC_DISCOVERY_URL` | Override the auto-constructed OIDC discovery endpoint (e.g. Authentik: `.../application/o/trek/.well-known/openid-configuration`) | — |
+| **Initial setup** | | |
+| `ADMIN_EMAIL` | Email for the first admin on initial boot. Must be set together with `ADMIN_PASSWORD`. If either is omitted a random password is printed to the server log. No effect once a user exists. | `admin@trek.local` |
+| `ADMIN_PASSWORD` | Password for the first admin on initial boot. Pairs with `ADMIN_EMAIL`. | random |
 | **Other** | | |
 | `DEMO_MODE` | Enable demo mode (hourly data resets) | `false` |
 | `MCP_RATE_LIMIT` | Max MCP API requests per user per minute | `300` |
 | `MCP_MAX_SESSION_PER_USER` | Max concurrent MCP sessions per user | `20` |
 
-## Optional API Keys
+</details>
 
-API keys are configured in the **Admin Panel** after login. Keys set by the admin are automatically shared with all users — no per-user configuration needed.
-
-### Google Maps (Place Search & Photos)
-
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a project and enable the **Places API (New)**
-3. Create an API key under Credentials
-4. In TREK: Admin Panel → Settings → Google Maps
-
-## Building from Source
-
-```bash
-git clone https://github.com/mauriceboe/TREK.git
-cd TREK
-docker build -t trek .
-```
+<br />
 
 ## Data & Backups
 
-- **Database**: SQLite, stored in `./data/travel.db`
-- **Uploads**: Stored in `./uploads/`
-- **Logs**: `./data/logs/trek.log` (auto-rotated)
-- **Backups**: Create and restore via Admin Panel
-- **Auto-Backups**: Configurable schedule and retention in Admin Panel
+- **Database** — SQLite, stored in `./data/travel.db`
+- **Uploads** — stored in `./uploads/`
+- **Logs** — `./data/logs/trek.log` (auto-rotated)
+- **Backups** — create and restore via Admin Panel
+- **Auto-Backups** — configurable schedule and retention in Admin Panel
+
+<br />
 
 ## License
 
-[AGPL-3.0](LICENSE)
+TREK is [AGPL v3](LICENSE). Self-host freely for personal or internal company use. If you modify and offer TREK as a network service to third parties, your modifications must be open-sourced under the same licence.
+
