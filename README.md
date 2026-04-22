@@ -127,11 +127,15 @@ A self-hosted, real-time collaborative travel planner — with maps, budgets, pa
 
 #### 🧩 Addons (admin-toggleable)
 
+- **Lists** — packing lists + to-dos with templates, member assignments, optional bag tracking
+- **Budget** — expense tracker with splits, pie chart, multi-currency
+- **Documents** — file attachments on trips, places, and reservations
+- **Collab** — chat, notes, polls, day-by-day attendance
 - **Vacay** — personal vacation planner with calendar, 100+ country holidays, carry-over tracking
 - **Atlas** — world map of visited countries, bucket list, travel stats, streak tracking, liquid-glass UI
-- **Collab** — chat, notes, polls, day-by-day attendance
-- **Journey** — magazine-style travel journal with entries, photos, maps, moods
-- **Dashboard widgets** — currency converter and timezone clocks
+- **Journey** — magazine-style travel journal with entries, photos (Immich/Synology), maps, moods
+- **Naver List Import** — one-click import from shared Naver Maps lists
+- **MCP** — expose TREK to AI assistants via OAuth 2.1
 
 </td>
 <td width="50%" valign="top">
